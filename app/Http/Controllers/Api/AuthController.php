@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\PosProfile;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -46,6 +47,19 @@ class AuthController extends Controller
         }
 
         $user = User::where('no_hp', $request->no_hp)->firstOrFail();
+        if ($user->role_id != 5) {
+            return response()->json([
+                'error' => 'user is not customer'
+            ], 401);
+        }
+
+        if ($request->isFirstTime) {
+            $profile = new PosProfile();
+            $profile->pos_name = $user->name;
+            $profile->user_id = $user->id;
+            $profile->pin = '000000';
+            $profile->save();
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -53,7 +67,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'status_verifikasi' => $user->isVerified,
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
@@ -75,9 +89,9 @@ class AuthController extends Controller
                 ], 401);
             }
             $user = User::where('id', Auth::user()->id)
-            ->with('posProfile')
-            // ->select('id', 'name', 'email', 'no_hp', 'role_id', 'isVerified')
-            ->firstOrFail();
+                ->with('posProfile')
+                // ->select('id', 'name', 'email', 'no_hp', 'role_id', 'isVerified')
+                ->firstOrFail();
 
             return response()->json([
                 'user' => $user
@@ -87,5 +101,82 @@ class AuthController extends Controller
                 'error' => $exception->getMessage()
             ], 500);
         }
+    }
+
+    public function getProfileUser()
+    {
+        try {
+            if (!Auth::check()) {
+                return response()->json([
+                    'error' => 'Unauthorized'
+                ], 401);
+            }
+            $profile = PosProfile::where('user_id', Auth::user()->id)->firstOrFail();
+            return response()->json([
+                'profile' => $profile
+            ], 200);
+        } catch (Exception $exception) {
+            return response()->json([
+                'error' => $exception->getMessage()
+            ], 500);
+        }
+    }
+
+    public function isFirstTimeLogin()
+    {
+        try {
+            if (!Auth::check()) {
+                return response()->json([
+                    'error' => 'Unauthorized'
+                ], 401);
+            }
+            $profile = PosProfile::where('user_id', Auth::user()->id)->firstOrFail();
+            if ($profile->pin == '000000') {
+                return response()->json([
+                    'isFirstTime' => true
+                ], 200);
+            }
+            return response()->json([
+                'isFirstTime' => false
+            ], 200);
+        } catch (Exception $exception) {
+            return response()->json([
+                'error' => $exception->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateUserPin(Request $request)
+    {
+        if (!$request->input()) {
+            return response()->json([
+                'error' => 'No pin provided'
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'pin' => 'required|string|min:6|max:6'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $profile = PosProfile::where('user_id', Auth::user()->id)->first();
+
+        if ($profile == null || !$profile) {
+            return response()->json([
+                'error' => 'Profile not found'
+            ], 404);
+        }
+
+        $profile->pin = Hash::make($request->pin);
+        $profile->save();
+
+        return response()->json([
+            'message' => 'Pin updated'
+        ], 200);
     }
 }

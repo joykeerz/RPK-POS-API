@@ -34,6 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('account')->group(function () {
         Route::get('/', [AuthController::class, 'getLoginUser']);
+        Route::get('/profile', [AuthController::class, 'getProfileUser']);
+        Route::get('/check/first-login', [AuthController::class, 'isFirstTimeLogin']);
+        Route::get('/update/pin', [AuthController::class, 'updateUserPin']);
     });
 
     Route::prefix('inventory')->group(function () {
