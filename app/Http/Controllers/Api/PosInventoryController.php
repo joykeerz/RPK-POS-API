@@ -28,146 +28,176 @@ class PosInventoryController extends Controller
         return response()->json($inventory, 200);
     }
 
-    public function getUserProducts()
+    public function getSingleInventory($id)
     {
         $profileId = Auth::user()->posProfile->id;
-        $products  = PosProduct::with(['posCategory'])
+        $inventory = PosProduct::with(['posInventory', 'posCategory'])
             ->where('profile_id', $profileId)
-            ->get();
-
-        if (empty($products)) {
-            return response()->json([
-                'error' => "there's no data yet"
-            ], 404);
-        };
-
-        return response()->json($products, 200);
-    }
-
-    public function createSingleProduct(Request $request)
-    {
-        $profileId = Auth::user()->posProfile->id;
-        if (!$request->input()) {
-            return response()->json([
-                'error' => "please fill data"
-            ], 400);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'product_name' => 'required',
-            'product_code' => 'required',
-            'product_category_id' => 'required',
-        ], [
-            'product_name.required' => 'product name harus di isi',
-            'product_code.required' => 'product code harus di isi',
-            'product_category_id.required' => 'product category harus di isi',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()
-            ], 400);
-        }
-
-        $product = PosProduct::create([
-            'profile_id' => $profileId,
-            'category_id' => $request->product_category_id,
-            'product_code' => $request->product_code,
-            'product_name' => $request->product_name,
-            'product_desc' => $request->product_desc ?? 'tidak ada',
-            'product_image' => $request->product_image ?? 'default.png',
-        ]);
-
-        if (!$product) {
-            return response()->json([
-                'error' => "failed to create product"
-            ], 500);
-        }
-
-        return response()->json($product, 200);
-    }
-
-    public function updateSingleProduct(Request $request, $productId)
-    {
-        $profileId = Auth::user()->posProfile->id;
-        if (!$request->input()) {
-            return response()->json([
-                'error' => "please fill data"
-            ], 400);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'product_name' => 'required',
-            'product_code' => 'required',
-            'product_category_id' => 'required',
-        ], [
-            'product_name.required' => 'product name harus di isi',
-            'product_code.required' => 'product code harus di isi',
-            'product_category_id.required' => 'product category harus di isi',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()
-            ], 400);
-        }
-
-        $product = PosProduct::where('id', $productId)->first();
-        $product->profile_id = $profileId;
-        $product->category_id = $request->product_category_id;
-        $product->product_code = $request->product_code;
-        $product->product_name = $request->product_name;
-        $product->product_desc = $request->product_desc ?? 'tidak ada';
-        $product->product_image = $request->product_image ?? 'default.png';
-        $product->save();
-
-        // $product = PosProduct::where('id', $productId)->update([
-        //     'profile_id' => $profileId,
-        //     'category_id' => $request->product_category_id,
-        //     'product_code' => $request->product_code,
-        //     'product_name' => $request->product_name,
-        //     'product_desc' => $request->product_desc ?? 'tidak ada',
-        //     'product_image' => $request->product_image ?? 'default.png',
-        // ]);
-
-        if (!$product) {
-            return response()->json([
-                'error' => "failed to update product"
-            ], 500);
-        }
-
-        return response()->json($product, 200);
-    }
-
-    public function getSingleProduct($productId)
-    {
-        $profileId = Auth::user()->posProfile->id;
-        $product = PosProduct::with(['posCategory'])
-            ->where('profile_id', $profileId)
-            ->where('id', $productId)
+            ->where('id', $id)
             ->first();
 
-        if (empty($product)) {
+        if (empty($inventory)) {
             return response()->json([
-                'error' => "Product not found"
+                'error' => "there's no data for this id"
             ], 404);
         };
 
-        return response()->json($product, 200);
+        return response()->json($inventory, 200);
     }
 
-    public function deleteSingelProduct($productId)
+    public function createInventory(Request $request)
     {
-        $product = PosProduct::where('id', $productId)->delete();
-
-        if (!$product) {
+        $profileId = Auth::user()->posProfile->id;
+        if (!$request->input()) {
             return response()->json([
-                'error' => "failed to delete product"
-            ], 500);
+                'error' => "please fill data"
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required',
+            'discount_id' => 'required',
+            'quantity' => 'required',
+            'price' => 'required',
+        ], [
+            'product_id.required' => 'product id harus di isi',
+            'discount_id.required' => 'discount id harus di isi',
+            'quantity.required' => 'product qty harus di isi',
+            'price.required' => 'product price harus di isi',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $inventory = PosInventory::create([
+            'product_id' => $request->product_id,
+            'discount_id' => $request->discount_id,
+            'quantity' => $request->quantity,
+            'price' => $request->price,
+        ]);
+
+        if ($inventory) {
+            return response()->json(
+                $inventory,
+                201
+            );
+        } else {
+            return response()->json([
+                'message' => 'failed create inventory',
+            ], 400);
+        }
+    }
+
+    public function updateInventory(Request $request, $id)
+    {
+        $profileId = Auth::user()->posProfile->id;
+        if (!$request->input()) {
+            return response()->json([
+                'error' => "please fill data"
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required',
+            'quantity' => 'required',
+            'price' => 'required',
+        ], [
+            'product_id.required' => 'product id harus di isi',
+            'quantity.required' => 'product qty harus di isi',
+            'price.required' => 'product price harus di isi',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $inventory = PosInventory::where('id', $id)->first();
+        if (empty($inventory)) {
+            return response()->json([
+                'error' => "data not found"
+            ], 404);
+        };
+
+        $inventory->product_id = $request->product_id;
+        $inventory->quantity = $request->quantity;
+        $inventory->price = $request->price;
+        $inventory->save();
+
+        if ($inventory) {
+            return response()->json(
+                $inventory,
+                201
+            );
+        } else {
+            return response()->json([
+                'message' => 'failed update inventory',
+            ], 400);
+        }
+    }
+
+    public function deleteInventory($id)
+    {
+        $inventory = PosInventory::where('id', $id)->first();
+        if (empty($inventory)) {
+            return response()->json([
+                'error' => "data not found"
+            ], 404);
+        };
+
+        $inventory->delete();
+
+        if ($inventory) {
+            return response()->json([
+                'message' => 'success delete inventory'
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'failed delete inventory',
+            ], 400);
+        }
+    }
+
+    public function updateInventoryQuantity(Request $request, $id)
+    {
+        if (!$request->input()) {
+            return response()->json([
+                'error' => "please fill data"
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+            'quantity' => 'required',
+        ], [
+            'type.required' => 'type harus di isi',
+            'quantity.required' => 'quantity harus di isi',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $inventory = PosInventory::findOrFail($id);
+
+        if ($request->type == 'add') {
+            $inventory->increment('quantity', $request->quantity);
+        } elseif ($request->type == 'reduce' && $inventory->quantity > $request->quantity) {
+            $inventory->decrement('quantity', $request->quantity);
+        } else {
+            return response()->json([
+                'error' => "Invalid operation"
+            ], 400);
         }
 
         return response()->json([
-            'message' => "success to delete product"
-        ], 200);
+            $inventory
+        ], 201);
     }
 }

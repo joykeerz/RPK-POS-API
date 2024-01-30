@@ -146,6 +146,41 @@ class AuthController extends Controller
         }
     }
 
+    public function updateProfile(Request $request)
+    {
+        if (!$request->input()) {
+            return response()->json([
+                'error' => 'No data provided'
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'pos_name' => 'required|string|min:3|max:255',
+            'pin' => 'required|string|min:6|max:6'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $profile = PosProfile::where('user_id', Auth::user()->id)->first();
+        if ($profile == null || !$profile) {
+            return response()->json([
+                'error' => 'Profile not found'
+            ], 404);
+        }
+
+        $profile->pos_name = $request->pos_name;
+        $profile->pin = Hash::make($request->pin);
+        $profile->save();
+
+        return response()->json([
+            'message' => 'Profile updated'
+        ], 200);
+    }
+
     public function updateUserPin(Request $request)
     {
         if (!$request->input()) {

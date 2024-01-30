@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PosCategoryController;
 use App\Http\Controllers\Api\PosInventoryController;
+use App\Http\Controllers\Api\PosProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,15 +43,25 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('inventory')->group(function () {
         Route::get('/', [PosInventoryController::class, 'getUserInventory']);
-        Route::get('/products', [PosInventoryController::class, 'getUserProducts']);
-        Route::get('/product/{id}', [PosInventoryController::class, 'getSingleProduct']);
-        Route::post('/product/create', [PosInventoryController::class, 'createSingleProduct']);
-        Route::post('/product/update/{id}', [PosInventoryController::class, 'updateSingleProduct']);
-        Route::get('/product/delete/{id}', [PosInventoryController::class, 'deleteSingelProduct']);
+        Route::get('/get/{id}', [PosInventoryController::class, 'getSingleInventory']);
+        Route::post('/create', [PosInventoryController::class, 'createInventory']);
+        Route::put('/update/{id}', [PosInventoryController::class, 'updateInventory']);
+        Route::delete('/delete/{id}', [PosInventoryController::class, 'deleteInventory']);
+        Route::put('/update/quantity/{id}', [PosInventoryController::class, 'updateInventoryQuantity']);
+    });
+
+    Route::prefix('product')->group(function () {
+        Route::get('/', [PosProductController::class, 'getUserProducts']);
+        Route::get('/get/{id}', [PosProductController::class, 'getSingleProduct']);
+        Route::post('/create', [PosProductController::class, 'createSingleProduct']);
+        Route::put('/update/{id}', [PosProductController::class, 'updateSingleProduct']);
+        Route::delete('/delete/{id}', [PosProductController::class, 'deleteSingelProduct']);
     });
 
     Route::prefix('category')->group(function () {
-        Route::get('/', [PosInventoryController::class, 'getUserCategory']);
-        Route::post('/create', [PosInventoryController::class, 'createCategory']);
+        Route::get('/', [PosCategoryController::class, 'getUserCategory']);
+        Route::get('/get/{id}', [PosCategoryController::class, 'getSingleCategory']);
+        Route::put('/update/{id}', [PosCategoryController::class, 'updateCategory']);
+        Route::post('/create', [PosCategoryController::class, 'createCategory']);
     });
 });
