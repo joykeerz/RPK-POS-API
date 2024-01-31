@@ -51,11 +51,11 @@ class AuthController extends Controller
         $isFirstTime = false;
         if ($checkProfile == null || !$checkProfile) {
             $isFirstTime = true;
-            $profile = new PosProfile();
-            $profile->pos_name = $user->name;
-            $profile->user_id = $user->id;
-            $profile->pin = '000000';
-            $profile->save();
+            // $profile = new PosProfile();
+            // $profile->pos_name = $user->name;
+            // $profile->user_id = $user->id;
+            // $profile->pin = '000000';
+            // $profile->save();
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -164,10 +164,13 @@ class AuthController extends Controller
         }
 
         $profile = PosProfile::where('user_id', Auth::user()->id)->first();
+        $user = User::where('id', Auth::user()->id)->first();
         if ($profile == null || !$profile) {
-            return response()->json([
-                'error' => 'Profile not found'
-            ], 404);
+            // $profile = new PosProfile();
+            // $profile->pos_name = $user->name;
+            // $profile->user_id = $user->id;
+            // $profile->pin = '000000';
+            // $profile->save();
         }
 
         $profile->pos_name = $request->pos_name;
@@ -198,11 +201,11 @@ class AuthController extends Controller
         }
 
         $profile = PosProfile::where('user_id', Auth::user()->id)->first();
-
+        $user = User::where('id', Auth::user()->id)->first();
         if ($profile == null || !$profile) {
-            return response()->json([
-                'error' => 'Profile not found'
-            ], 404);
+            $profile = new PosProfile();
+            $profile->pos_name = $user->name;
+            $profile->user_id = $user->id;
         }
 
         $profile->pin = Hash::make($request->pin);
