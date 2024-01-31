@@ -17,12 +17,6 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        if (!$request->input()) {
-            return response()->json([
-                'error' => 'No data provided'
-            ], 400);
-        }
-
         $validator = Validator::make($request->all(), [
             'no_hp' => 'required|numeric',
             'password' => 'required|string|min:8'
@@ -53,7 +47,10 @@ class AuthController extends Controller
             ], 401);
         }
 
-        if ($request->isFirstTime) {
+        $checkProfile = PosProfile::where('user_id', $user->id)->first();
+        $isFirstTime = false;
+        if ($checkProfile == null || !$checkProfile) {
+            $isFirstTime = true;
             $profile = new PosProfile();
             $profile->pos_name = $user->name;
             $profile->user_id = $user->id;
@@ -68,6 +65,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'status_verifikasi' => $user->isVerified,
             'user' => $user,
+            'isFirstTime' => $isFirstTime
         ], 200);
     }
 
