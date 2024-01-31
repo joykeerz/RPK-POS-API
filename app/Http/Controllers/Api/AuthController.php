@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['register', 'login']);
+    }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
