@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Discount;
+use App\Models\PosCategory;
 use App\Models\PosProfile;
+use App\Models\Promo;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -198,6 +201,30 @@ class AuthController extends Controller
             $profile = new PosProfile();
             $profile->pos_name = $user->name;
             $profile->user_id = $user->id;
+
+            $category = new PosCategory();
+            $category->profile_id = $profile->id;
+            $category->category_name = "Lainnya";
+            $category->category_desc = "Produk milik toko";
+            $category->is_from_bulog = false;
+            $category->save();
+
+            $promo = new Promo();
+            $promo->profile_id = $profile->id;
+            $promo->promo_name = "Tidak Promo";
+            $promo->promo_type = "none";
+            $promo->promo_category = "none";
+            $promo->promo_value = 0;
+            $promo->promo_start = now();
+            $promo->promo_end = now();
+            $promo->save();
+
+            $discount = new Discount();
+            $discount->profile_id = $profile->id;
+            $discount->discount_name = "Tidak Diskon";
+            $discount->discount_type = "none";
+            $discount->discount_value = 0;
+            $discount->save();
         }
 
         $profile->pin = Hash::make($request->pin);
