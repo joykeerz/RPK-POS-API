@@ -196,6 +196,6 @@ class PosInventoryController extends Controller
             ], 400);
         }
 
-        return response()->json($inventory, 201);
+        return response()->json($inventory, 200);
     }
 }
