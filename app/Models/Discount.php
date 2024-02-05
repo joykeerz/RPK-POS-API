@@ -14,5 +14,7 @@ class Discount extends Model
         'discount_name',
         'discount_type',
         'discount_value',
+        'is_from_bulog',
+        'is_active'
     ];
 }

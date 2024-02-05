@@ -218,6 +218,7 @@ class AuthController extends Controller
             $promo->promo_category = "Bulog Discount";
             $promo->promo_value = 0;
             $promo->is_active = true;
+            $promo->is_from_bulog = true;
             $promo->promo_start = now();
             $promo->promo_end = now();
             $promo->save();
@@ -228,6 +229,7 @@ class AuthController extends Controller
             $discount->discount_type = "Percent Off";
             $discount->discount_value = 0;
             $discount->is_active = true;
+            $discount->is_from_bulog = true;
             $discount->save();
         }
 

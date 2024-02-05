@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\PosCategoryController;
 use App\Http\Controllers\Api\PosDiscountController;
 use App\Http\Controllers\Api\PosInventoryController;
 use App\Http\Controllers\Api\PosProductController;
+use App\Http\Controllers\Api\PosPromoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -70,5 +71,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('discount')->group(function () {
         Route::get('/', [PosDiscountController::class, 'index']);
         Route::post('/create', [PosDiscountController::class, 'store']);
+        Route::get('/{id}', [PosDiscountController::class, 'show']);
+        Route::put('/update/{id}', [PosDiscountController::class, 'update']);
+        Route::delete('/delete/{id}', [PosDiscountController::class, 'destroy']);
+    });
+
+    Route::prefix('promo')->group(function () {
+        Route::get('/', [PosPromoController::class, 'index']);
+        Route::post('/create', [PosPromoController::class, 'store']);
+        Route::get('/{id}', [PosPromoController::class, 'show']);
+        Route::put('/update/{id}', [PosPromoController::class, 'update']);
+        Route::delete('/delete/{id}', [PosPromoController::class, 'destroy']);
     });
 });

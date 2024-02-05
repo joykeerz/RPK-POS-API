@@ -9,6 +9,7 @@ use App\Models\PosProduct;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class PosProductController extends Controller
@@ -86,12 +87,17 @@ class PosProductController extends Controller
             'product_name' => 'required',
             'product_code' => 'required',
             'product_category_id' => 'required',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg|max:10000',
             'quantity' => 'required',
             'price' => 'required',
         ], [
             'product_name.required' => 'product name harus di isi',
             'product_code.required' => 'product code harus di isi',
             'product_category_id.required' => 'product category harus di isi',
+            'product_image.required' => 'product image harus di isi',
+            'product_image.image' => 'product image harus berupa gambar',
+            'product_image.mimes' => 'product image harus berupa gambar dengan format jpeg, png, jpg',
+            'product_image.max' => 'product image maksimal 10MB',
             'quantity.required' => 'product quantity harus di isi',
             'price.required' => 'product price harus di isi',
         ]);
@@ -102,13 +108,28 @@ class PosProductController extends Controller
             ], 400);
         }
 
+        $filePath = 'none';
+        if ($request->hasFile('product_image')) {
+            $url = env('API_DASHBOARD_URL') . '/mobile/receive-product-image';
+            $image = $request->file('product_image');
+            $fileName = 'image_' . time() . '.' . $image->getClientOriginalExtension();
+            $imageContent = file_get_contents($image->getRealPath());
+            $response = Http::attach(
+                'product_image',
+                $imageContent,
+                $fileName
+            )->post($url);
+            $responseData = $response->json();
+            $filePath = $responseData['path'];
+        }
+
         $product = new PosProduct();
         $product->profile_id = $profileId;
         $product->category_id = $request->product_category_id;
         $product->product_code = $request->product_code;
         $product->product_name = $request->product_name;
         $product->product_desc = $request->product_desc ?? 'tidak ada';
-        $product->product_image = $request->product_image ?? 'default.png';
+        $product->product_image = $filePath ?? 'images/pos/products/default.png';
         $product->save();
 
         $discountId = Discount::where('profile_id', $profileId)->where('discount_name', 'Tidak Diskon')->first();
@@ -142,10 +163,15 @@ class PosProductController extends Controller
             'product_name' => 'required',
             'product_code' => 'required',
             'product_category_id' => 'required',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg|max:10000',
         ], [
             'product_name.required' => 'product name harus di isi',
             'product_code.required' => 'product code harus di isi',
             'product_category_id.required' => 'product category harus di isi',
+            'product_image.required' => 'product image harus di isi',
+            'product_image.image' => 'product image harus berupa gambar',
+            'product_image.mimes' => 'product image harus berupa gambar dengan format jpeg, png, jpg',
+            'product_image.max' => 'product image maksimal 10MB',
         ]);
 
         if ($validator->fails()) {
@@ -154,23 +180,29 @@ class PosProductController extends Controller
             ], 400);
         }
 
+        $filePath = 'none';
+        if ($request->hasFile('product_image')) {
+            $url = env('API_DASHBOARD_URL') . '/mobile/receive-product-image';
+            $image = $request->file('product_image');
+            $fileName = 'image_' . time() . '.' . $image->getClientOriginalExtension();
+            $imageContent = file_get_contents($image->getRealPath());
+            $response = Http::attach(
+                'product_image',
+                $imageContent,
+                $fileName
+            )->post($url);
+            $responseData = $response->json();
+            $filePath = $responseData['path'];
+        }
+
         $product = PosProduct::where('id', $productId)->first();
         $product->profile_id = $profileId;
         $product->category_id = $request->product_category_id;
         $product->product_code = $request->product_code;
         $product->product_name = $request->product_name;
         $product->product_desc = $request->product_desc ?? 'tidak ada';
-        $product->product_image = $request->product_image ?? 'default.png';
+        $product->product_image = $filePath ?? 'images/pos/products/default.png';
         $product->save();
-
-        // $product = PosProduct::where('id', $productId)->update([
-        //     'profile_id' => $profileId,
-        //     'category_id' => $request->product_category_id,
-        //     'product_code' => $request->product_code,
-        //     'product_name' => $request->product_name,
-        //     'product_desc' => $request->product_desc ?? 'tidak ada',
-        //     'product_image' => $request->product_image ?? 'default.png',
-        // ]);
 
         if (!$product) {
             return response()->json([
