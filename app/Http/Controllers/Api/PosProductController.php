@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Discount;
+use App\Models\PosInventory;
 use App\Models\PosProduct;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -67,6 +70,63 @@ class PosProductController extends Controller
         }
 
         return response()->json($product, 200);
+    }
+
+    public function createCompleteProduct(Request $request)
+    {
+        $profileId = Auth::user()->posProfile->id;
+
+        if (!$request->input()) {
+            return response()->json([
+                'error' => "please fill data"
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'product_name' => 'required',
+            'product_code' => 'required',
+            'product_category_id' => 'required',
+            'quantity' => 'required',
+            'price' => 'required',
+        ], [
+            'product_name.required' => 'product name harus di isi',
+            'product_code.required' => 'product code harus di isi',
+            'product_category_id.required' => 'product category harus di isi',
+            'quantity.required' => 'product quantity harus di isi',
+            'price.required' => 'product price harus di isi',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $product = new PosProduct();
+        $product->profile_id = $profileId;
+        $product->category_id = $request->product_category_id;
+        $product->product_code = $request->product_code;
+        $product->product_name = $request->product_name;
+        $product->product_desc = $request->product_desc ?? 'tidak ada';
+        $product->product_image = $request->product_image ?? 'default.png';
+        $product->save();
+
+        $discountId = Discount::where('profile_id', $profileId)->where('discount_name', 'Tidak Diskon')->first();
+        $inventory = new PosInventory();
+        $inventory->product_id = $product->id;
+        $inventory->discount_id = $discountId->id;
+        $inventory->quantity = $request->quantity;
+        $inventory->price = $request->price;
+        $inventory->save();
+
+        if (!$product || !$inventory) {
+            return response()->json([
+                'error' => "failed to create product"
+            ], 500);
+        }
+
+        $response = Produk::with(['posInventory'])->where('id', $product->id)->first();
+        return response()->json($response, 200);
     }
 
     public function updateSingleProduct(Request $request, $productId)

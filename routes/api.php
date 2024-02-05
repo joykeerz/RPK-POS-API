@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PosCategoryController;
+use App\Http\Controllers\Api\PosDiscountController;
 use App\Http\Controllers\Api\PosInventoryController;
 use App\Http\Controllers\Api\PosProductController;
 use Illuminate\Http\Request;
@@ -54,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PosProductController::class, 'getUserProducts']);
         Route::get('/get/{id}', [PosProductController::class, 'getSingleProduct']);
         Route::post('/create', [PosProductController::class, 'createSingleProduct']);
+        Route::post('/create/complete', [PosProductController::class, 'createCompleteProduct']);
         Route::put('/update/{id}', [PosProductController::class, 'updateSingleProduct']);
         Route::delete('/delete/{id}', [PosProductController::class, 'deleteSingelProduct']);
     });
@@ -63,5 +65,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/{id}', [PosCategoryController::class, 'getSingleCategory']);
         Route::put('/update/{id}', [PosCategoryController::class, 'updateCategory']);
         Route::post('/create', [PosCategoryController::class, 'createCategory']);
+    });
+
+    Route::prefix('discount')->group(function () {
+        Route::get('/', [PosDiscountController::class, 'index']);
+        Route::post('/create', [PosDiscountController::class, 'store']);
     });
 });

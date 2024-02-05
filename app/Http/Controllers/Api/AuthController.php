@@ -201,6 +201,8 @@ class AuthController extends Controller
             $profile = new PosProfile();
             $profile->pos_name = $user->name;
             $profile->user_id = $user->id;
+            $profile->save();
+
 
             $category = new PosCategory();
             $category->profile_id = $profile->id;
@@ -212,9 +214,10 @@ class AuthController extends Controller
             $promo = new Promo();
             $promo->profile_id = $profile->id;
             $promo->promo_name = "Tidak Promo";
-            $promo->promo_type = "none";
-            $promo->promo_category = "none";
+            $promo->promo_type = "Percent Off";
+            $promo->promo_category = "Bulog Discount";
             $promo->promo_value = 0;
+            $promo->is_active = true;
             $promo->promo_start = now();
             $promo->promo_end = now();
             $promo->save();
@@ -222,8 +225,9 @@ class AuthController extends Controller
             $discount = new Discount();
             $discount->profile_id = $profile->id;
             $discount->discount_name = "Tidak Diskon";
-            $discount->discount_type = "none";
+            $discount->discount_type = "Percent Off";
             $discount->discount_value = 0;
+            $discount->is_active = true;
             $discount->save();
         }
 

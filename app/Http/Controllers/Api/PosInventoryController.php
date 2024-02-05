@@ -171,10 +171,10 @@ class PosInventoryController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'type' => 'required',
+            // 'type' => 'required',
             'quantity' => 'required',
         ], [
-            'type.required' => 'type harus di isi',
+            // 'type.required' => 'type harus di isi',
             'quantity.required' => 'quantity harus di isi',
         ]);
 
@@ -186,9 +186,9 @@ class PosInventoryController extends Controller
 
         $inventory = PosInventory::findOrFail($id);
 
-        if ($request->type == 'add') {
+        if ($request->type == 'add' || $request->quantity > 0) {
             $inventory->increment('quantity', $request->quantity);
-        } elseif ($request->type == 'reduce' && $inventory->quantity > $request->quantity) {
+        } elseif (($request->type == 'reduce' && $inventory->quantity > $request->quantity) || ($inventory->quantity > $request->quantity && $request->quantity < 0)) {
             $inventory->decrement('quantity', $request->quantity);
         } else {
             return response()->json([
@@ -196,8 +196,6 @@ class PosInventoryController extends Controller
             ], 400);
         }
 
-        return response()->json([
-            $inventory
-        ], 201);
+        return response()->json($inventory, 201);
     }
 }
