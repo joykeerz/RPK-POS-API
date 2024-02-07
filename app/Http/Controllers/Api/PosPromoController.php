@@ -67,6 +67,8 @@ class PosPromoController extends Controller
         $promo->promo_value = $request->promo_value;
         $promo->promo_start = $request->promo_start;
         $promo->promo_end = $request->promo_end;
+        $promo->is_active = $request->is_active;
+        $promo->is_from_bulog = false;
         $promo->save();
 
         if (!$promo) {

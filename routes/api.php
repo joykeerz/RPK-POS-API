@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\AccountancyController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PosCategoryController;
 use App\Http\Controllers\Api\PosDiscountController;
 use App\Http\Controllers\Api\PosInventoryController;
 use App\Http\Controllers\Api\PosProductController;
 use App\Http\Controllers\Api\PosPromoController;
+use App\Http\Controllers\SessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -82,5 +84,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [PosPromoController::class, 'show']);
         Route::put('/update/{id}', [PosPromoController::class, 'update']);
         Route::delete('/delete/{id}', [PosPromoController::class, 'destroy']);
+    });
+
+    Route::prefix('accountancy')->group(function () {
+        Route::get('/', [AccountancyController::class, 'index']);
+        Route::get('/today', [AccountancyController::class, 'getAccountancyToday']);
+        Route::get('/this-week', [AccountancyController::class, 'getAccountancyThisWeek']);
+    });
+
+    Route::prefix('session')->group(function () {
+        Route::get('/all/open', [SessionController::class, 'getOpenSession']);
+        Route::get('/all/close', [SessionController::class, 'getclosedSession']);
+        Route::get('/select/{id}', [SessionController::class, 'getSingleSession']);
+        Route::post('/open', [SessionController::class, 'openSession']);
+        Route::put('/close/{id}', [SessionController::class, 'closeSession']);
     });
 });
