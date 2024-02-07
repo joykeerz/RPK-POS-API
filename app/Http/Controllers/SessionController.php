@@ -49,17 +49,32 @@ class SessionController extends Controller
     public function closeSession(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
+            'employee_name' => 'required',
+            'opening_cash' => 'required|numeric',
             'closing_cash' => 'required|numeric',
+            'cash_transaction_amount' => 'required|numeric',
+            'digital_transaction_amount' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        $posSession = PosSession::find($id);
+        // $posSession = PosSession::find($id);
+        // $posSession->closing_cash = $request->closing_cash;
+        // $posSession->balance = $request->closing_cash;
+        // $posSession->session_end = now();
+        // $posSession->session_notes = $request->session_notes ?? '';
+        // $posSession->save();
+
+        $posSession = new PosSession();
+        $posSession->profile_id = Auth::user()->posProfile->id;
+        $posSession->employee_name = $request->employee_name;
+        $posSession->balance = $request->opening_cash;
+        $posSession->opening_cash = $request->opening_cash;
         $posSession->closing_cash = $request->closing_cash;
-        $posSession->balance = $request->closing_cash;
-        $posSession->session_end = now();
+        $posSession->session_start = $request->session_start;
+        $posSession->session_end = $request->session_end;
         $posSession->session_notes = $request->session_notes ?? '';
         $posSession->save();
 
@@ -68,7 +83,8 @@ class SessionController extends Controller
         $posAccountancy->session_id = $posSession->id;
         $posAccountancy->accountancy_name = 'Closing Cash' . ' ' . $posSession->employee_name;
         $posAccountancy->transaction_type = 'pemasukan';
-        $posAccountancy->transaction_amount = $request->closing_cash;
+        $posAccountancy->cash_transaction_amount = $request->cash_transaction_amount;
+        $posAccountancy->digital_transaction_amount = $request->digital_transaction_amount;
         $posAccountancy->extra_note = $request->extra_notes ?? '';
         if ($request->hasFile('attachment_image')) {
             $url = env('API_DASHBOARD_URL') . '/mobile/receive-pembukuan-image';
