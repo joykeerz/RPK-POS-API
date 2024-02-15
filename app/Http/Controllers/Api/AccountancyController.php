@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PosAccountancy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AccountancyController extends Controller
 {
@@ -36,6 +37,33 @@ class AccountancyController extends Controller
         $posAccountancy = PosAccountancy::with(['posSession'])
             ->where('profile_id', Auth::user()->posProfile->id)
             ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->get();
+
+        return response()->json($posAccountancy, 200);
+    }
+
+    public function getAccountancyBetween(Request $request)
+    {
+        // return now();
+        $validator = Validator::make($request->all(), [
+            'start' => 'required|date',
+            'end' => 'required|date',
+        ], [
+            'start.required' => 'start date harus di isi',
+            'end.required' => 'end date harus di isi',
+            'start.date' => 'start date harus berupa tanggal',
+            'end.date' => 'end date harus berupa tanggal',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $posAccountancy = PosAccountancy::with(['posSession'])
+            ->where('profile_id', Auth::user()->posProfile->id)
+            ->whereBetween('created_at', [$request->start, $request->end])
             ->get();
 
         return response()->json($posAccountancy, 200);

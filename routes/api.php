@@ -90,6 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [AccountancyController::class, 'index']);
         Route::get('/today', [AccountancyController::class, 'getAccountancyToday']);
         Route::get('/this-week', [AccountancyController::class, 'getAccountancyThisWeek']);
+        Route::post('/between', [AccountancyController::class, 'getAccountancyBetween']);
     });
 
     Route::prefix('session')->group(function () {
