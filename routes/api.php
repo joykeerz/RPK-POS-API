@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AccountancyController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\PosCategoryController;
 use App\Http\Controllers\Api\PosDiscountController;
 use App\Http\Controllers\Api\PosInventoryController;
@@ -99,5 +100,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/select/{id}', [SessionController::class, 'getSingleSession']);
         Route::post('/open', [SessionController::class, 'openSession']);
         Route::put('/close/{id}', [SessionController::class, 'closeSession']);
+    });
+
+    Route::prefix('payment-method')->group(function () {
+        Route::get('/', [PaymentMethodController::class, 'index']);
+        Route::post('/create', [PaymentMethodController::class, 'store']);
+        Route::get('/{id}', [PaymentMethodController::class, 'show']);
+        Route::put('/update/{id}', [PaymentMethodController::class, 'update']);
+        Route::delete('/delete/{id}', [PaymentMethodController::class, 'destroy']);
     });
 });

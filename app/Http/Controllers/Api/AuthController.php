@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use App\Models\PosCategory;
+use App\Models\PosPayment;
 use App\Models\PosProfile;
 use App\Models\Promo;
 use App\Models\User;
@@ -231,6 +232,13 @@ class AuthController extends Controller
             $discount->is_active = true;
             $discount->is_from_bulog = true;
             $discount->save();
+
+            $paymentMethod = new PosPayment();
+            $paymentMethod->profile_id = $profile->id;
+            $paymentMethod->payment_method = "Tunai";
+            $paymentMethod->payment_info = "Pembayaran tunai";
+            $paymentMethod->save();
+
         }
 
         $profile->pin = Hash::make($request->pin);
