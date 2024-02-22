@@ -147,7 +147,10 @@ class PosProductController extends Controller
         }
 
         $response = Produk::with(['posInventory'])->where('id', $product->id)->first();
-        return response()->json($response, 200);
+        return response()->json([
+            'product_id' => $product->id,
+            'inventory_id' => $inventory->id,
+        ], 200);
     }
 
     public function updateSingleProduct(Request $request, $productId)
