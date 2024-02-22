@@ -64,6 +64,8 @@ class AccountancyController extends Controller
         $posAccountancy = PosAccountancy::with(['posSession'])
             ->where('profile_id', Auth::user()->posProfile->id)
             ->whereBetween('created_at', [$request->start, $request->end])
+            ->whereDate('created_at', '!=', $request->start)
+            ->whereDate('created_at', '!=', $request->end)
             ->get();
 
         return response()->json($posAccountancy, 200);
@@ -83,6 +85,19 @@ class AccountancyController extends Controller
     public function show(string $id)
     {
         //
+        $postAccountancy = PosAccountancy::with(['posSession'])
+            ->where('profile_id', Auth::user()->posProfile->id)
+            ->where('id', $id)
+            ->first();
+
+        if ($postAccountancy == null || !$postAccountancy) {
+            return response()->json([
+                'error' => 'Data not found'
+            ], 404);
+        }
+
+
+        return response()->json($postAccountancy, 200);
     }
 
     /**

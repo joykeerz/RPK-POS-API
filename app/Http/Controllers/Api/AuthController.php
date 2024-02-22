@@ -238,13 +238,13 @@ class AuthController extends Controller
             $paymentMethod->payment_method = "Tunai";
             $paymentMethod->payment_info = "Pembayaran tunai";
             $paymentMethod->save();
-
         }
 
         $profile->pin = Hash::make($request->pin);
         $profile->save();
 
         return response()->json([
+            'pin' => $profile->pin,
             'message' => 'Pin updated'
         ], 200);
     }
