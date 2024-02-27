@@ -9,4 +9,5 @@ class PosDetailOrder extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+    protected $fillable = ['order_id', 'product_id', 'item_quantity', 'item_subtotal'];
 }

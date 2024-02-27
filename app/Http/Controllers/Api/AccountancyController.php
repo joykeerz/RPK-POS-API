@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PosAccountancy;
+use App\Models\PosDetailOrder;
 use App\Models\PosOrder;
 use App\Models\PosSale;
 use Illuminate\Http\Request;
@@ -93,33 +94,6 @@ class AccountancyController extends Controller
             ], 400);
         }
 
-        // $validator = Validator::make($request->all(), [
-        //     'payment_method_id' => 'required',
-        //     'promo_id' => 'required',
-        //     'total_item_qty' => 'required',
-        //     'order_subtotal' => 'required',
-        //     'grand_total' => 'required',
-        //     'paid_amount' => 'required',
-        //     'change_amount' => 'required',
-        //     'paid_date' => 'required',
-        // ], [
-        //     'payment_method_id.required' => 'payment method harus di isi',
-        //     'promo_id.required' => 'Promo harus di isi',
-        //     'total_item_qty.required' => 'Total item quantity harus di isi',
-        //     'order_subtotal.required' => 'order subtotal harus di isi',
-        //     'grand_total.required' => 'grand total harus di isi',
-        //     'paid_amount.required' => 'paid amount harus di isi',
-        //     'change_amount.required' => 'change amount harus di isi',
-        //     'paid_date.required' => 'paid date harus di isi',
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'error' => $validator->errors(),
-        //         'detail_order_errors' => $validator->errors()->get('detail_order.*'), // Get errors for array elements
-        //     ], 400);
-        // }
-
         foreach ($request->input() as $key => $inputData) {
             $orderCode = $this->generateOrderCode($profileId);
 
@@ -153,7 +127,7 @@ class AccountancyController extends Controller
                 ];
             }
 
-            $posSale = PosSale::create([$orderDetailData]);
+            $posDetailOrder = PosDetailOrder::insert($orderDetailData);
         }
 
         return response()->json([
@@ -180,7 +154,7 @@ class AccountancyController extends Controller
 
         $month = now()->format('m');
 
-        return str_pad($orderCode, 5, '0', STR_PAD_LEFT) . '/ORD/' . $month . '/' . $currentYear;
+        return now()->format('YmdHis') . '/ORD/' . $month . '/' . $currentYear;
     }
 
     public function generateTransactionCode($orderId)
@@ -201,7 +175,7 @@ class AccountancyController extends Controller
 
         $month = now()->format('m');
 
-        return str_pad($TransactionCode, 5, '0', STR_PAD_LEFT) . '/TRANS/' . $month . '/' . $currentYear;
+        return now()->format('YmdHis') . '/TRANS/' . $month . '/' . $currentYear;
     }
 
     private function extractOrderNumber($orderCode)
