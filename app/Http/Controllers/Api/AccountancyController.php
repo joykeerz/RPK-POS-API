@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PosAccountancy;
+use App\Models\PosOrder;
+use App\Models\PosSale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AccountancyController extends Controller
@@ -77,6 +80,140 @@ class AccountancyController extends Controller
     public function store(Request $request)
     {
         //
+    }
+
+    public function storeAllHistory(Request $request)
+    {
+        $orderDetailData = [];
+        $profileId = Auth::user()->posProfile->id;
+
+        if (!$request->input()) {
+            return response()->json([
+                'error' => "please fill data"
+            ], 400);
+        }
+
+        // $validator = Validator::make($request->all(), [
+        //     'payment_method_id' => 'required',
+        //     'promo_id' => 'required',
+        //     'total_item_qty' => 'required',
+        //     'order_subtotal' => 'required',
+        //     'grand_total' => 'required',
+        //     'paid_amount' => 'required',
+        //     'change_amount' => 'required',
+        //     'paid_date' => 'required',
+        // ], [
+        //     'payment_method_id.required' => 'payment method harus di isi',
+        //     'promo_id.required' => 'Promo harus di isi',
+        //     'total_item_qty.required' => 'Total item quantity harus di isi',
+        //     'order_subtotal.required' => 'order subtotal harus di isi',
+        //     'grand_total.required' => 'grand total harus di isi',
+        //     'paid_amount.required' => 'paid amount harus di isi',
+        //     'change_amount.required' => 'change amount harus di isi',
+        //     'paid_date.required' => 'paid date harus di isi',
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'error' => $validator->errors(),
+        //         'detail_order_errors' => $validator->errors()->get('detail_order.*'), // Get errors for array elements
+        //     ], 400);
+        // }
+
+        foreach ($request->input() as $key => $inputData) {
+            $orderCode = $this->generateOrderCode($profileId);
+
+            $posOrder = new PosOrder();
+            $posOrder->profile_id = $profileId;
+            $posOrder->order_code = $orderCode;
+            $posOrder->order_status = 'complete';
+            $posOrder->total_item_qty = $inputData['total_item_qty'];
+            $posOrder->order_subtotal = $inputData['order_subtotal'];
+            $posOrder->extra_note = $inputData['extra_note'] ?? 'tidak ada';
+            $posOrder->save();
+
+            $posSale = new PosSale();
+            $posSale->order_id = $posOrder->id;
+            $posSale->payment_method_id = $inputData['payment_method_id'];
+            $posSale->promo_id = $inputData['promo_id'];
+            $posSale->transaction_code = $this->generateTransactionCode($posOrder->id);
+            $posSale->payment_status = 'paid';
+            $posSale->grand_total = $inputData['grand_total'];
+            $posSale->paid_amount = $inputData['paid_amount'];
+            $posSale->change_amount = $inputData['change_amount'];
+            $posSale->paid_date = $inputData['paid_date'];
+            $posSale->save();
+
+            foreach ($inputData['detail_order'] as $key => $detailOrder) {
+                $orderDetailData[] = [
+                    'order_id' => $posSale->id,
+                    'product_id' => $detailOrder['product_id'],
+                    'item_quantity' => $detailOrder['item_quantity'],
+                    'item_subtotal' => $detailOrder['item_subtotal']
+                ];
+            }
+
+            $posSale = PosSale::create([$orderDetailData]);
+        }
+
+        return response()->json([
+            'data' => $request->input(),
+            'message' => 'berhasil tersimpan'
+        ], 200);
+    }
+
+    public function generateOrderCode($profileId)
+    {
+        $lastRecord = DB::table('pos_orders')
+            ->where('profile_id', $profileId)
+            ->latest('created_at')
+            ->first();
+
+        if ($lastRecord) {
+            $lastOrderNumber = $this->extractOrderNumber($lastRecord->order_code);
+            $currentYear = now()->format('Y');
+            $orderCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
+        } else {
+            $currentYear = now()->format('Y');
+            $orderCode = 1;
+        }
+
+        $month = now()->format('m');
+
+        return str_pad($orderCode, 5, '0', STR_PAD_LEFT) . '/ORD/' . $month . '/' . $currentYear;
+    }
+
+    public function generateTransactionCode($orderId)
+    {
+        $lastRecord = DB::table('pos_sales')
+            ->where('order_id', $orderId)
+            ->latest('created_at')
+            ->first();
+
+        if ($lastRecord) {
+            $lastOrderNumber = $this->extractOrderNumber($lastRecord->transaction_code);
+            $currentYear = now()->format('Y');
+            $TransactionCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
+        } else {
+            $currentYear = now()->format('Y');
+            $TransactionCode = 1;
+        }
+
+        $month = now()->format('m');
+
+        return str_pad($TransactionCode, 5, '0', STR_PAD_LEFT) . '/TRANS/' . $month . '/' . $currentYear;
+    }
+
+    private function extractOrderNumber($orderCode)
+    {
+        return (int)substr($orderCode, 0, 5);
+    }
+
+    private function calculateNextOrderCode($lastOrderNumber, $created_at, $currentYear)
+    {
+        $lastInsertYear = date('Y', strtotime($created_at));
+
+        return $currentYear != $lastInsertYear ? 1 : $lastOrderNumber + 1;
     }
 
     /**

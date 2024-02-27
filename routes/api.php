@@ -110,4 +110,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update/{id}', [PaymentMethodController::class, 'update']);
         Route::delete('/delete/{id}', [PaymentMethodController::class, 'destroy']);
     });
+
+    Route::prefix('sale')->group(function () {
+        Route::post('/store/all', [AccountancyController::class, 'storeAllHistory']);
+    });
 });
