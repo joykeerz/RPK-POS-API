@@ -48,7 +48,6 @@ class AccountancyController extends Controller
 
     public function getAccountancyBetween(Request $request)
     {
-        // return now();
         $validator = Validator::make($request->all(), [
             'start' => 'required|date',
             'end' => 'required|date',
@@ -63,6 +62,14 @@ class AccountancyController extends Controller
             return response()->json([
                 'error' => $validator->errors()
             ], 400);
+        }
+
+        if ($request->start  == $request->end) {
+            $posAccountancy = PosAccountancy::with(['posSession'])
+                ->where('profile_id', Auth::user()->posProfile->id)
+                ->where('created_at', $request->start)
+                ->get();
+            return response()->json($posAccountancy, 200);
         }
 
         $posAccountancy = PosAccountancy::with(['posSession'])
@@ -146,15 +153,15 @@ class AccountancyController extends Controller
         if ($lastRecord) {
             $lastOrderNumber = $this->extractOrderNumber($lastRecord->order_code);
             $currentYear = now()->format('Y');
-            $orderCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
+            // $orderCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
         } else {
             $currentYear = now()->format('Y');
-            $orderCode = 1;
+            // $orderCode = 1;
         }
 
         $month = now()->format('m');
 
-        return now()->format('YmdHis') . '/ORD/' . $month . '/' . $currentYear;
+        return now()->format('His') . '/ORD/' . $month . '/' . $currentYear;
     }
 
     public function generateTransactionCode($orderId)
@@ -167,15 +174,15 @@ class AccountancyController extends Controller
         if ($lastRecord) {
             $lastOrderNumber = $this->extractOrderNumber($lastRecord->transaction_code);
             $currentYear = now()->format('Y');
-            $TransactionCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
+            // $TransactionCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
         } else {
             $currentYear = now()->format('Y');
-            $TransactionCode = 1;
+            // $TransactionCode = 1;
         }
 
         $month = now()->format('m');
 
-        return now()->format('YmdHis') . '/TRANS/' . $month . '/' . $currentYear;
+        return now()->format('His') . '/TRANS/' . $month . '/' . $currentYear;
     }
 
     private function extractOrderNumber($orderCode)
