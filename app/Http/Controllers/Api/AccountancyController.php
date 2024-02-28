@@ -85,11 +85,6 @@ class AccountancyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
-
     public function storeAllHistory(Request $request)
     {
         $orderDetailData = [];
@@ -102,11 +97,9 @@ class AccountancyController extends Controller
         }
 
         foreach ($request->input() as $key => $inputData) {
-            $orderCode = $this->generateOrderCode($profileId);
-
             $posOrder = new PosOrder();
             $posOrder->profile_id = $profileId;
-            $posOrder->order_code = $orderCode;
+            $posOrder->order_code = $this->generateOrderCode($profileId);
             $posOrder->order_status = 'complete';
             $posOrder->total_item_qty = $inputData['total_item_qty'];
             $posOrder->order_subtotal = $inputData['order_subtotal'];
@@ -145,44 +138,48 @@ class AccountancyController extends Controller
 
     public function generateOrderCode($profileId)
     {
-        $lastRecord = DB::table('pos_orders')
-            ->where('profile_id', $profileId)
-            ->latest('created_at')
-            ->first();
+        // $lastRecord = DB::table('pos_orders')
+        //     ->where('profile_id', $profileId)
+        //     ->latest('created_at')
+        //     ->first();
 
-        if ($lastRecord) {
-            $lastOrderNumber = $this->extractOrderNumber($lastRecord->order_code);
-            $currentYear = now()->format('Y');
-            // $orderCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
-        } else {
-            $currentYear = now()->format('Y');
-            // $orderCode = 1;
-        }
+        // if ($lastRecord) {
+        //     $lastOrderNumber = $this->extractOrderNumber($lastRecord->order_code);
+        //     $currentYear = now()->format('Y');
+        //     $orderCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
+        // } else {
+        //     $currentYear = now()->format('Y');
+        //     $orderCode = 1;
+        // }
 
+        $orderCode = uniqid();
+        $currentYear = now()->format('Y');
         $month = now()->format('m');
 
-        return now()->format('His') . '/ORD/' . $month . '/' . $currentYear;
+        return $orderCode . '/ORD/' . $month . '/' . $currentYear;
     }
 
     public function generateTransactionCode($orderId)
     {
-        $lastRecord = DB::table('pos_sales')
-            ->where('order_id', $orderId)
-            ->latest('created_at')
-            ->first();
+        // $lastRecord = DB::table('pos_sales')
+        //     ->where('order_id', $orderId)
+        //     ->latest('created_at')
+        //     ->first();
 
-        if ($lastRecord) {
-            $lastOrderNumber = $this->extractOrderNumber($lastRecord->transaction_code);
-            $currentYear = now()->format('Y');
-            // $TransactionCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
-        } else {
-            $currentYear = now()->format('Y');
-            // $TransactionCode = 1;
-        }
+        // if ($lastRecord) {
+        //     $lastOrderNumber = $this->extractOrderNumber($lastRecord->transaction_code);
+        //     $currentYear = now()->format('Y');
+        //     $TransactionCode = $this->calculateNextOrderCode($lastOrderNumber, $lastRecord->created_at, $currentYear);
+        // } else {
+        //     $currentYear = now()->format('Y');
+        //     $TransactionCode = 1;
+        // }
 
+        $transactionCode = uniqid();
         $month = now()->format('m');
+        $currentYear = now()->format('Y');
 
-        return now()->format('His') . '/TRANS/' . $month . '/' . $currentYear;
+        return $transactionCode . '/TRANS/' . $month . '/' . $currentYear;
     }
 
     private function extractOrderNumber($orderCode)
