@@ -82,7 +82,6 @@ class PaymentMethodController extends Controller
      */
     public function show(string $id)
     {
-        //
         $paymentMethod = PosPayment::where('profile_id', Auth::user()->posProfile->id)->where('id', $id)->first();
         if (!$paymentMethod || $paymentMethod->count() < 1) {
             return response()->json([
@@ -130,7 +129,6 @@ class PaymentMethodController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         $paymentMethod = PosPayment::where('profile_id', Auth::user()->posProfile->id)->where('id', $id)->first();
         if (!$paymentMethod || $paymentMethod->count() < 1) {
             return response()->json([

@@ -130,6 +130,8 @@ class AccountancyController extends Controller
             $posDetailOrder = PosDetailOrder::insert($orderDetailData);
         }
 
+        $this->updateUserInventory($orderDetailData);
+
         return response()->json([
             'data' => $request->input(),
             'message' => 'berhasil tersimpan'
@@ -218,9 +220,31 @@ class AccountancyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateUserInventory($detailOrders)
     {
-        //
+        $dataToUpdate = [];
+        foreach ($detailOrders as $key => $detailOrder) {
+            $dataToUpdate[] = [
+                'product_id' => $detailOrder['product_id'],
+                'quantity' => $detailOrder['item_quantity']
+            ];
+        }
+
+        if (!empty($dataToUpdate)) {
+            $this->updateInventoryData($dataToUpdate);
+        }
+    }
+
+    public function updateInventoryData($dataToUpdate)
+    {
+        $productIds = collect($dataToUpdate)->pluck('product_id')->toArray();
+        $quantities = collect($dataToUpdate)->pluck('quantity')->toArray();
+
+        DB::table('pos_inventories')
+            ->whereIn('product_id', $productIds)
+            ->update(['quantity' => DB::raw('quantity - CASE ' . implode(' ', array_map(function ($productId, $quantity) {
+                return "WHEN product_id = $productId THEN $quantity ";
+            }, $productIds, $quantities)) . 'END')]);
     }
 
     /**
