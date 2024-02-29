@@ -114,7 +114,7 @@ class AccountancyController extends Controller
             $posSale->transaction_code = $inputData['transaction_code'];
             $posSale->payment_status = 'paid';
             $posSale->grand_total = $inputData['grand_total'];
-            $posSale->paid_amount = $inputData['paid_amount'];
+            $posSale->paid_amount = ($posSale->grand_total - $inputData['change_amount']);
             $posSale->change_amount = $inputData['change_amount'];
             $posSale->paid_date = $inputData['paid_date'];
             $posSale->save();
