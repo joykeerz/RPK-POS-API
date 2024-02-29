@@ -68,10 +68,10 @@ class PaymentMethodController extends Controller
                 $fileName
             )->post($url);
             $responseData = $response->json();
-            $filePath = $responseData['path'];
+            $filepath = $responseData['path'];
         }
         $paymentMethod->payment_info = $request->payment_info;
-        $paymentMethod->payment_file = $filePath ?? 'images/pos/payment/methods/default.png';
+        $paymentMethod->payment_file = $filepath ?? 'images/pos/payment/methods/default.png';
         $paymentMethod->save();
 
         return response()->json($paymentMethod, 201);
