@@ -110,7 +110,7 @@ class AccountancyController extends Controller
             $posSale->order_id = $posOrder->id;
             $posSale->payment_method_id = $inputData['payment_method_id'];
             $posSale->promo_id = $inputData['promo_id'];
-            // $posSale->transaction_code = $this->generateTransactionCode($posOrder->id);
+            // $posSale->transaction_code = $this->generateTransactionCode($posOrder->  id);
             $posSale->transaction_code = $inputData['transaction_code'];
             $posSale->payment_status = 'paid';
             $posSale->grand_total = $inputData['grand_total'];
@@ -138,7 +138,6 @@ class AccountancyController extends Controller
             'message' => 'berhasil tersimpan'
         ], 200);
     }
-
     public function generateOrderCode($profileId)
     {
         // $lastRecord = DB::table('pos_orders')

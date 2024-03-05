@@ -30,6 +30,7 @@ class PaymentMethodController extends Controller
      */
     public function store(Request $request)
     {
+
         if (!$request->input()) {
             return response()->json([
                 'error' => "please fill data"
@@ -56,7 +57,8 @@ class PaymentMethodController extends Controller
         $paymentMethod->profile_id = Auth::user()->posProfile->id;
         $paymentMethod->payment_method = $request->method_name;
         $paymentMethod->payment_type = $request->payment_type;
-        $filepath = '';
+
+        $filepath = 'none';
         if ($request->hasFile('payment_file')) {
             $url = env('API_DASHBOARD_URL') . '/mobile/receive-payment-method-image';
             $image = $request->file('payment_file');
@@ -71,7 +73,7 @@ class PaymentMethodController extends Controller
             $filepath = $responseData['path'];
         }
         $paymentMethod->payment_info = $request->payment_info;
-        $paymentMethod->payment_file = $filepath ?? 'images/pos/payment/methods/default.png';
+        $paymentMethod->payment_file = $filepath ?? 'images/pos/payment/method/default.png';
         $paymentMethod->save();
 
         return response()->json($paymentMethod, 201);
