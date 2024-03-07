@@ -20,7 +20,13 @@ class PosProfile extends Model
         return $this->hasMany(PosCategory::class, 'profile_id');
     }
 
-    public function user(){
+    public function posOrder()
+    {
+        return $this->hasMany(PosOrder::class, 'profile_id');
+    }
+
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 }

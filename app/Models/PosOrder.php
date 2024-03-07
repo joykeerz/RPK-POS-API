@@ -9,4 +9,9 @@ class PosOrder extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    public function posProfile()
+    {
+        return $this->belongsTo(PosProfile::class, 'profile_id');
+    }
 }

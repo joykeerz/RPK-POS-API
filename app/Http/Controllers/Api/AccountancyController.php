@@ -201,11 +201,44 @@ class AccountancyController extends Controller
      */
     public function show(string $id)
     {
-        //
-        $postAccountancy = PosAccountancy::with(['posSession'])
-            ->where('profile_id', Auth::user()->posProfile->id)
-            ->where('id', $id)
+        $postAccountancy = PosAccountancy::join('pos_sessions', 'pos_sessions.id', 'pos_accountancies.session_id')
+            ->join('pos_profiles', 'pos_profiles.id', 'pos_accountancies.profile_id')
+            ->join('pos_orders', 'pos_orders.profile_id', 'pos_profiles.id')
+            ->join('pos_sales', 'pos_sales.order_id', 'pos_orders.id')
+            ->select(
+                'pos_accountancies.id as accountancy_id',
+                'pos_accountancies.profile_id',
+                'pos_accountancies.session_id',
+                'pos_sales.order_id',
+                'pos_accountancies.accountancy_name',
+                'pos_accountancies.transaction_type',
+                'pos_accountancies.cash_transaction_amount',
+                'pos_accountancies.digital_transaction_amount',
+                'pos_accountancies.extra_note',
+                'pos_accountancies.attachment_image',
+                'pos_sessions.employee_name',
+                'pos_sessions.balance',
+                'pos_sessions.opening_cash',
+                'pos_sessions.closing_cash',
+                'pos_sessions.session_start',
+                'pos_sessions.session_end',
+                'pos_sessions.session_notes',
+                'pos_orders.order_code',
+                'pos_orders.order_status',
+                'pos_orders.total_item_qty',
+                'pos_orders.order_subtotal',
+                'pos_sales.transaction_code',
+                'pos_sales.payment_status',
+                'pos_sales.grand_total',
+                'pos_sales.paid_amount',
+                'pos_sales.change_amount',
+                'pos_sales.paid_date',
+            )
+            ->where('pos_accountancies.profile_id', Auth::user()->posProfile->id)
+            ->where('pos_accountancies.id', $id)
             ->first();
+
+        $posDetailOrder = PosDetailOrder::where('order_id', $postAccountancy->order_id)->get();
 
         if ($postAccountancy == null || !$postAccountancy) {
             return response()->json([
@@ -214,7 +247,10 @@ class AccountancyController extends Controller
         }
 
 
-        return response()->json($postAccountancy, 200);
+        return response()->json([
+            'pos_accountancy' => $postAccountancy,
+            'pos_detail_orders' => $posDetailOrder
+        ], 200);
     }
 
     /**
