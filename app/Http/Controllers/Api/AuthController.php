@@ -240,13 +240,21 @@ class AuthController extends Controller
             $paymentMethod->payment_info = "Pembayaran tunai";
             $paymentMethod->save();
 
-            $employee = new PosEmployee();
-            $employee->profile_id = $profile->id;
-            $employee->pin = Hash::make('123456');
-            $employee->employee_name = Auth::user()->name;
-            $employee->employee_email = Auth::user()->email;
-            $employee->employee_phone = Auth::user()->no_hp;
-            $employee->save();
+            // $employee = new PosEmployee();
+            // $employee->profile_id = $profile->id;
+            // $employee->pin = bcrypt('123456');
+            // $employee->employee_name = Auth::user()->name;
+            // $employee->employee_email = Auth::user()->email;
+            // $employee->employee_phone = Auth::user()->no_hp;
+            // $employee->save();
+
+            DB::table('pos_employees')->insert([
+                'profile_id' => $profile->id,
+                'pin' => bcrypt('123456'),
+                'employee_name' => Auth::user()->name,
+                'employee_email' => Auth::user()->email,
+                'employee_phone' => Auth::user()->no_hp,
+            ]);
         }
 
         $profile->pin = Hash::make($request->pin);
