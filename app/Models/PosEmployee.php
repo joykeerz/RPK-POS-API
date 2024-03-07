@@ -9,6 +9,6 @@ class PosEmployee extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-    protected $table = ['pos_employees'];
+    // protected $table = ['pos_employees'];
 
 }
