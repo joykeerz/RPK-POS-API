@@ -254,6 +254,7 @@ class AuthController extends Controller
                 'employee_name' => Auth::user()->name,
                 'employee_email' => Auth::user()->email,
                 'employee_phone' => Auth::user()->no_hp,
+                'is_owner' => true,
             ]);
         }
 
