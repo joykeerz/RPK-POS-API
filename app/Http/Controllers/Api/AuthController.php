@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use App\Models\PosCategory;
+use App\Models\PosEmployee;
 use App\Models\PosPayment;
 use App\Models\PosProfile;
 use App\Models\Promo;
@@ -238,6 +239,14 @@ class AuthController extends Controller
             $paymentMethod->payment_method = "Tunai";
             $paymentMethod->payment_info = "Pembayaran tunai";
             $paymentMethod->save();
+
+            $employee = new PosEmployee();
+            $employee->profile_id = $profile->id;
+            $employee->pin = Hash::make('123456');
+            $employee->employee_name = Auth::user()->name;
+            $employee->employee_email = Auth::user()->email;
+            $employee->employee_phone = Auth::user()->no_hp;
+            $employee->save();
         }
 
         $profile->pin = Hash::make($request->pin);

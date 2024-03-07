@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\PosCategoryController;
 use App\Http\Controllers\Api\PosDiscountController;
+use App\Http\Controllers\Api\PosEmployeeController;
 use App\Http\Controllers\Api\PosInventoryController;
 use App\Http\Controllers\Api\PosProductController;
 use App\Http\Controllers\Api\PosPromoController;
@@ -113,5 +114,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('sale')->group(function () {
         Route::post('/store/all', [AccountancyController::class, 'storeAllHistory']);
+    });
+
+    Route::prefix('employee')->group(function () {
+        Route::get('/', [PosEmployeeController::class, 'index']);
+        Route::post('/create', [PosEmployeeController::class, 'store']);
+        Route::get('/{id}', [PosEmployeeController::class, 'show']);
+        Route::put('/update/account/{id}', [PosEmployeeController::class, 'update']);
+        Route::put('/update/pin/{id}', [PosEmployeeController::class, 'updateEmployeePin']);
+        Route::delete('/delete/{id}', [PosEmployeeController::class, 'destroy']);
     });
 });
