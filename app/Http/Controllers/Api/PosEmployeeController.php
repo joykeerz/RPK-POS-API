@@ -43,6 +43,7 @@ class PosEmployeeController extends Controller
             'pin' => 'required|string|min:6|max:6',
             'employee_name' => 'required',
             'employee_phone' => 'required',
+            'employee_email' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -54,7 +55,7 @@ class PosEmployeeController extends Controller
         $posEmployee = new PosEmployee();
         $posEmployee->profile_id = $posProfile->id;
         $posEmployee->pin = $request->pin;
-        $posEmployee->employee_email = Auth::user()->email;
+        $posEmployee->employee_email = $request->employee_email;
         $posEmployee->employee_name = $request->employee_name;
         $posEmployee->employee_phone = $request->employee_phone;
         $posEmployee->save();
@@ -92,6 +93,7 @@ class PosEmployeeController extends Controller
             'pin' => 'required|string|min:6|max:6',
             'employee_name' => 'required',
             'employee_phone' => 'required',
+            'employee_email' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -106,7 +108,7 @@ class PosEmployeeController extends Controller
         }
 
         $posEmployee->pin = $request->pin;
-        $posEmployee->employee_email = Auth::user()->email;
+        $posEmployee->employee_email = $request->employee_email;
         $posEmployee->employee_name = $request->employee_name;
         $posEmployee->employee_phone = $request->employee_phone;
         $posEmployee->save();
