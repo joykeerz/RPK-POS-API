@@ -252,7 +252,6 @@ class AuthController extends Controller
                 'profile_id' => $profile->id,
                 'pin' => bcrypt('123456'),
                 'employee_name' => Auth::user()->name,
-                'employee_email' => Auth::user()->email,
                 'employee_phone' => Auth::user()->no_hp,
                 'is_owner' => true,
             ]);
