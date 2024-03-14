@@ -100,7 +100,6 @@ class PosEmployeeController extends Controller
         }
 
         $posEmployee = PosEmployee::where('id', $id)->first();
-        return $posEmployee;
         if (!$posEmployee) {
             return response()->json('no employee in this account', 200);
         }
@@ -109,6 +108,7 @@ class PosEmployeeController extends Controller
         }else{
             $posEmployee->pin = $posEmployee->pin;
         }
+        return $posEmployee->pin;
         $posEmployee->employee_name = $request->employee_name;
         $posEmployee->employee_phone = $request->employee_phone;
         $posEmployee->save();
