@@ -106,7 +106,6 @@ class PosEmployeeController extends Controller
         if ($request->pin) {
             $posEmployee->pin = $request->pin;
         }
-        return $posEmployee->pin;
         $posEmployee->employee_name = $request->employee_name;
         $posEmployee->employee_phone = $request->employee_phone;
         $posEmployee->save();
