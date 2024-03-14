@@ -100,6 +100,7 @@ class PosEmployeeController extends Controller
         }
 
         $posEmployee = PosEmployee::where('id', $id)->first();
+        return $posEmployee;
         if (!$posEmployee) {
             return response()->json('no employee in this account', 200);
         }
