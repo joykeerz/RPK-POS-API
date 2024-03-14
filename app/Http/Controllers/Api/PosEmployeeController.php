@@ -103,9 +103,9 @@ class PosEmployeeController extends Controller
         if (!$posEmployee) {
             return response()->json('no employee in this account', 200);
         }
-        if ($posEmployee->pin) {
+        if ($request->pin) {
             $posEmployee->pin = $request->pin;
-        }else{
+        } else {
             $posEmployee->pin = $posEmployee->pin;
         }
         return $posEmployee->pin;
