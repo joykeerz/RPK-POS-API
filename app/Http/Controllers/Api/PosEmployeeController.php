@@ -53,7 +53,7 @@ class PosEmployeeController extends Controller
 
         $posEmployee = new PosEmployee();
         $posEmployee->profile_id = $posProfile->id;
-        $posEmployee->pin = $request->pin;
+        $posEmployee->pin = bcrypt($request->pin);
         $posEmployee->employee_name = $request->employee_name;
         $posEmployee->employee_phone = $request->employee_phone;
         $posEmployee->save();
@@ -104,7 +104,7 @@ class PosEmployeeController extends Controller
             return response()->json('no employee in this account', 200);
         }
         if ($request->pin) {
-            $posEmployee->pin = $request->pin;
+            $posEmployee->pin = bcrypt($request->pin);
         }
         $posEmployee->employee_name = $request->employee_name;
         $posEmployee->employee_phone = $request->employee_phone;
