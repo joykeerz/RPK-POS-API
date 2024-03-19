@@ -136,7 +136,7 @@ class PosEmployeeController extends Controller
             return response()->json('no employee in this account', 200);
         }
 
-        $posEmployee->pin = $request->pin;
+        $posEmployee->pin = bcrypt($request->pin);
         $posEmployee->save();
 
         return response()->json(['pin' => $posEmployee->pin], 200);
