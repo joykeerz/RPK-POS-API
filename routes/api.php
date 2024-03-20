@@ -128,6 +128,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('printer')->group(function () {
         Route::get('/', [PrinterController::class, 'index']);
+        Route::get('/detail/{id}', [PrinterController::class, 'show']);
         Route::post('/create', [PrinterController::class, 'create']);
+        Route::put('/update/{id}', [PrinterController::class, 'update']);
+        Route::delete('/delete/{id}', [PrinterController::class, 'delete']);
     });
 });
