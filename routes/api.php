@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PosEmployeeController;
 use App\Http\Controllers\Api\PosInventoryController;
 use App\Http\Controllers\Api\PosProductController;
 use App\Http\Controllers\Api\PosPromoController;
+use App\Http\Controllers\Api\PrinterController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -123,5 +124,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update/account/{id}', [PosEmployeeController::class, 'update']);
         Route::put('/update/pin/{id}', [PosEmployeeController::class, 'updateEmployeePin']);
         Route::delete('/delete/{id}', [PosEmployeeController::class, 'destroy']);
+    });
+
+    Route::prefix('printer')->group(function () {
+        Route::get('/', [PrinterController::class, 'index']);
+        Route::post('/create', [PrinterController::class, 'create']);
     });
 });
