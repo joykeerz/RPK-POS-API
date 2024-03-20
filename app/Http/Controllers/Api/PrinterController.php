@@ -12,13 +12,25 @@ class PrinterController extends Controller
 {
     public function index()
     {
-        $printers = PosPrinter::where('profile_id', Auth::user()->posProfile->id);
-        if (empty($printers) || count($printers) == 0) {
+        $printers = PosPrinter::where('profile_id', Auth::user()->posProfile->id)->get();
+        if (empty($printers) || count($printers) < 1) {
             return response()->json([
                 'error' => "there's no printer yet in this account"
             ], 404);
         }
         return response()->json($printers, 200);
+    }
+
+    public function show(string $id)
+    {
+        $printer = PosPrinter::where('profile_id', Auth::user()->posProfile->id)->where('id', $id)->first();
+        if (empty($printers) || count($printers) < 1) {
+            return response()->json([
+                'error' => "printer not found"
+            ], 404);
+        }
+
+        return response()->json($printer, 200);
     }
 
     public function create(Request $request)
@@ -44,9 +56,57 @@ class PrinterController extends Controller
         $printer->save();
 
         if (!$printer) {
-            return response()->json('printer failed to save', 200);
+            return response()->json('printer failed to save', 500);
         }
 
         return response()->json($printer, 200);
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'printer_name' => 'required',
+            'printer_address' => 'required'
+        ], [
+            'printer_name.required' => 'printer name cannot be empty',
+            'printer_address.required' => 'printer address cannot be empty'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 400);
+        }
+
+        $printer = PosPrinter::where('profile_id', Auth::user()->posProfile->id)->where('id', $id)->first();
+
+        if (empty($printers) || count($printers) < 1) {
+            return response()->json([
+                'error' => "printer not found"
+            ], 404);
+        }
+
+        $printer->printer_name = $request->printer_name;
+        $printer->printer_address = $request->printer_address;
+        $printer->save();
+
+        return response()->json($printer, 200);
+    }
+
+    public function delete(string $id)
+    {
+        $printer = PosPrinter::where('profile_id', Auth::user()->posProfile->id)->where('id', $id)->first();
+
+        if (empty($printers) || count($printers) < 1) {
+            return response()->json([
+                'error' => "printer not found"
+            ], 404);
+        }
+
+        $printer->delete();
+
+        return response()->json([
+            'message' => "printer deleted"
+        ], 200);
     }
 }
