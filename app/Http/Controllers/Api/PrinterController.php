@@ -25,7 +25,7 @@ class PrinterController extends Controller
     public function show(string $id)
     {
         $printer = PosPrinter::where('id', $id)->first();
-        if (empty($printers) || count($printers) == 0) {
+        if (empty($printer) || count($printer) < 1) {
             return response()->json([
                 'error' => "printer not found"
             ], 404);
