@@ -72,10 +72,8 @@ class PrinterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'printer_name' => 'required',
-            'printer_address' => 'required'
         ], [
             'printer_name.required' => 'printer name cannot be empty',
-            'printer_address.required' => 'printer address cannot be empty'
         ]);
 
         if ($validator->fails()) {
@@ -93,7 +91,9 @@ class PrinterController extends Controller
         }
 
         $printer->printer_name = $request->printer_name;
-        $printer->printer_address = $request->printer_address;
+        if ($request->printer_address) {
+            $printer->printer_address = $request->printer_address;
+        }
         $printer->save();
 
         return response()->json($printer, 200);
