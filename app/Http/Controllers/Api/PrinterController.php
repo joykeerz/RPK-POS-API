@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PosPrinter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PrinterController extends Controller
@@ -47,6 +48,12 @@ class PrinterController extends Controller
             return response()->json([
                 'error' => $validator->errors()
             ], 400);
+        }
+
+        if (PosPrinter::where('profile_id', Auth::user()->posProfile->id)->where('printer_name', $request->printer_name)->first()) {
+            return response()->json([
+                'error' => "printer already exist"
+            ], 500);
         }
 
         $printer = new PosPrinter();
