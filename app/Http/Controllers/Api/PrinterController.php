@@ -14,10 +14,9 @@ class PrinterController extends Controller
     public function index()
     {
         $printers = PosPrinter::where('profile_id', Auth::user()->posProfile->id)->get();
-        if (empty($printers) || count($printers) < 1) {
-            return response()->json([
-                'error' => "there's no printer yet in this account"
-            ], 404);
+
+        if (!$printers) {
+            return response()->json("there's no printer yet in this account", 404);
         }
         return response()->json($printers, 200);
     }
