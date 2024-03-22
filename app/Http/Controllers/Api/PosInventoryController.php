@@ -143,7 +143,7 @@ class PosInventoryController extends Controller
     public function deleteInventory($id)
     {
         $inventory = PosInventory::where('id', $id)->first();
-        if (empty($inventory)) {
+        if (!$inventory) {
             return response()->json([
                 'error' => "data not found"
             ], 404);

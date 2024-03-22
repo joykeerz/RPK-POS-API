@@ -12,6 +12,6 @@ class PosInventory extends Model
 
     public function posProduct()
     {
-        return $this->hasOne(PosProduct::class, 'inventory_id');
+        return $this->belongsTo(PosProduct::class, 'product_id');
     }
 }

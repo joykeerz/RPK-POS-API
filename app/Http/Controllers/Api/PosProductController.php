@@ -156,6 +156,7 @@ class PosProductController extends Controller
     public function updateSingleProduct(Request $request, $productId)
     {
         $profileId = Auth::user()->posProfile->id;
+
         if (!$request->input()) {
             return response()->json([
                 'error' => "please fill data"
@@ -167,6 +168,9 @@ class PosProductController extends Controller
             'product_code' => 'required',
             'product_category_id' => 'required',
             'product_image' => 'required|image|mimes:jpeg,png,jpg|max:10000',
+            'quantity' => 'required',
+            'price' => 'required',
+            'discount_id' => 'required'
         ], [
             'product_name.required' => 'product name harus di isi',
             'product_code.required' => 'product code harus di isi',
@@ -175,6 +179,9 @@ class PosProductController extends Controller
             'product_image.image' => 'product image harus berupa gambar',
             'product_image.mimes' => 'product image harus berupa gambar dengan format jpeg, png, jpg',
             'product_image.max' => 'product image maksimal 10MB',
+            'quantity.required' => 'product quantity harus di isi',
+            'price.required' => 'product price harus di isi',
+            'discount.required' => 'discount harus di isi'
         ]);
 
         if ($validator->fails()) {
@@ -199,7 +206,6 @@ class PosProductController extends Controller
         }
 
         $product = PosProduct::where('id', $productId)->first();
-        $product->profile_id = $profileId;
         $product->category_id = $request->product_category_id;
         $product->product_code = $request->product_code;
         $product->product_name = $request->product_name;
@@ -207,13 +213,22 @@ class PosProductController extends Controller
         $product->product_image = $filePath ?? 'images/pos/products/default.png';
         $product->save();
 
-        if (!$product) {
+        $inventory = PosInventory::where('product_id', $product->id)->first();
+        $inventory->discount_id = $request->discount_id;
+        $inventory->quantity = $request->quantity;
+        $inventory->price = $request->price;
+        $inventory->save();
+
+        if (!$product || !$inventory) {
             return response()->json([
                 'error' => "failed to update product"
             ], 500);
         }
 
-        return response()->json($product, 200);
+        return response()->json([
+            'product' => $product,
+            'inventory' => $inventory
+        ], 200);
     }
 
     public function getSingleProduct($productId)
