@@ -157,11 +157,11 @@ class PosProductController extends Controller
     {
         $profileId = Auth::user()->posProfile->id;
 
-        if (!$request->input()) {
-            return response()->json([
-                'error' => "please fill data"
-            ], 400);
-        }
+        // if (!$request->input()) {
+        //     return response()->json([
+        //         'error' => "please fill data"
+        //     ], 400);
+        // }
 
         $validator = Validator::make($request->all(), [
             'product_name' => 'required',
