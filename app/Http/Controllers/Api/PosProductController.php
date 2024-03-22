@@ -170,7 +170,7 @@ class PosProductController extends Controller
             'product_image' => 'required|image|mimes:jpeg,png,jpg|max:10000',
             'quantity' => 'required',
             'price' => 'required',
-            'discount_id' => 'required'
+            // 'discount_id' => 'required'
         ], [
             'product_name.required' => 'product name harus di isi',
             'product_code.required' => 'product code harus di isi',
@@ -181,7 +181,7 @@ class PosProductController extends Controller
             'product_image.max' => 'product image maksimal 10MB',
             'quantity.required' => 'product quantity harus di isi',
             'price.required' => 'product price harus di isi',
-            'discount.required' => 'discount harus di isi'
+            // 'discount.required' => 'discount harus di isi'
         ]);
 
         if ($validator->fails()) {
@@ -214,7 +214,7 @@ class PosProductController extends Controller
         $product->save();
 
         $inventory = PosInventory::where('product_id', $product->id)->first();
-        $inventory->discount_id = $request->discount_id;
+        // $inventory->discount_id = $request->discount_id;
         $inventory->quantity = $request->quantity;
         $inventory->price = $request->price;
         $inventory->save();
