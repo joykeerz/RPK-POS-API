@@ -64,12 +64,12 @@ class AccountancyController extends Controller
             ], 400);
         }
 
-        if ($request->start  == $request->end) {
+        if ($request->start == $request->end) {
             $posAccountancy = PosAccountancy::with(['posSession'])
                 ->where('profile_id', Auth::user()->posProfile->id)
                 ->where('created_at', $request->start)
                 ->get();
-            return response()->json($posAccountancy, 200);
+            return response()->json(['message' => 'hari sama', 'data' => $posAccountancy], 200);
         }
 
         $posAccountancy = PosAccountancy::with(['posSession'])
