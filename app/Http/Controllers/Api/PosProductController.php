@@ -192,7 +192,7 @@ class PosProductController extends Controller
             ], 400);
         }
 
-        $filePath = 'none';
+        $filePath = '';
         if ($request->hasFile('product_image')) {
             $url = env('API_DASHBOARD_URL') . '/mobile/receive-product-image';
             $image = $request->file('product_image');
