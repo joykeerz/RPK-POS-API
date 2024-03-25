@@ -155,7 +155,7 @@ class PosProductController extends Controller
 
     public function updateSingleProduct(Request $request, $productId)
     {
-        return response()->json($request->input());
+        // return response()->json($request->input());
 
         $profileId = Auth::user()->posProfile->id;
 
