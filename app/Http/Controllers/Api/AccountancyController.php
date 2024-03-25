@@ -69,7 +69,7 @@ class AccountancyController extends Controller
                 ->where('profile_id', Auth::user()->posProfile->id)
                 ->whereDate('created_at', $request->start)
                 ->get();
-            return response()->json(['message' => 'hari sama', 'data' => $posAccountancy], 200);
+            return response()->json($posAccountancy, 200);
         }
 
         $posAccountancy = PosAccountancy::with(['posSession'])
