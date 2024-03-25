@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/create/complete', [PosProductController::class, 'createCompleteProduct']);
         Route::put('/update/{id}', [PosProductController::class, 'updateSingleProduct']);
         Route::delete('/delete/{id}', [PosProductController::class, 'deleteSingelProduct']);
+        // Route::post('/complete/update/{id}', [PosProductController::class, '']);
     });
 
     Route::prefix('category')->group(function () {
