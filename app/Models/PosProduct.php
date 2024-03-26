@@ -24,4 +24,9 @@ class PosProduct extends Model
     {
         return $this->hasOne(PosInventory::class, 'product_id');
     }
+
+    public function posDetailOrders()
+    {
+        return $this->hasMany(PosDetailOrder::class);
+    }
 }

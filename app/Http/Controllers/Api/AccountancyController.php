@@ -241,6 +241,17 @@ class AccountancyController extends Controller
         ], 200);
     }
 
+    public function showItems($id, $order_id)
+    {
+        $detailOrder = PosDetailOrder::with('posProduct')->where('order_id', $order_id)->get();
+
+        if (!$detailOrder) {
+            return response()->json(['error' => 'data not found'], 404);
+        }
+
+        return response()->json($detailOrder, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      */
