@@ -236,7 +236,10 @@ class AccountancyController extends Controller
 
         $totalSale = count($posDetailOrders);
 
-        $totalItemSold = array_sum($posDetailOrders->item_quantity);
+        $totalItemSold = PosOrder::with('posSale')
+            ->where('profile_id', $profileId)
+            ->where('session_id', $postAccountancy->session_id)
+            ->sum('item_quantity');
 
         return response()->json([
             // 'profile_id' => Auth::user()->posProfile->id,
