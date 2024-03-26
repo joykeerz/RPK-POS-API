@@ -236,8 +236,11 @@ class AccountancyController extends Controller
 
         $totalSale = count($posDetailOrders);
 
+        $totalItemSold = array_sum($posDetailOrders->item_quantity);
+
         return response()->json([
             // 'profile_id' => Auth::user()->posProfile->id,
+            'total_item_sold_inSession' => $totalItemSold,
             'total_transaction_inSession' => $totalSale,
             'pos_accountancy' => $postAccountancy,
             'pos_order' => $posDetailOrders
