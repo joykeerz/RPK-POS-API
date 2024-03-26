@@ -99,6 +99,7 @@ class AccountancyController extends Controller
         foreach ($request->input() as $key => $inputData) {
             $posOrder = new PosOrder();
             $posOrder->profile_id = $profileId;
+            $posOrder->session_id = $inputData['session_id'];
             $posOrder->order_code = $this->generateOrderCode($profileId);
             $posOrder->order_status = 'complete';
             $posOrder->total_item_qty = $inputData['total_item_qty'];
@@ -110,7 +111,7 @@ class AccountancyController extends Controller
             $posSale->order_id = $posOrder->id;
             $posSale->payment_method_id = $inputData['payment_method_id'];
             $posSale->promo_id = $inputData['promo_id'];
-            // $posSale->transaction_code = $this->generateTransactionCode($posOrder->  id);
+            // $posSale->transaction_code = $this->generateTransactionCode($posOrder->id);
             $posSale->transaction_code = $inputData['transaction_code'];
             $posSale->payment_status = 'paid';
             $posSale->grand_total = $inputData['grand_total'];
@@ -230,7 +231,7 @@ class AccountancyController extends Controller
 
         $posDetailOrders = PosOrder::with('posSale')
             ->where('profile_id', $profileId)
-            ->whereBetween('created_at', [$postAccountancy->session_start, $postAccountancy->session_end])
+            ->whereBetween('session_id', $postAccountancy->session_id)
             ->get();
 
         return response()->json([
