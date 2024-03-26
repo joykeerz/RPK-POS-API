@@ -14,4 +14,9 @@ class PosOrder extends Model
     {
         return $this->belongsTo(PosProfile::class, 'profile_id');
     }
+
+    public function posSale()
+    {
+        return $this->hasOne(PosSale::class, 'order_id');
+    }
 }

@@ -9,4 +9,9 @@ class PosSale extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    public function posOrder()
+    {
+        return $this->belongsTo(PosOrder::class);
+    }
 }
