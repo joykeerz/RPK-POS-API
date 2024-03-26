@@ -234,8 +234,11 @@ class AccountancyController extends Controller
             ->where('session_id', $postAccountancy->session_id)
             ->get();
 
+        $totalSale = count($posDetailOrders);
+
         return response()->json([
-            'profile_id' => Auth::user()->posProfile->id,
+            // 'profile_id' => Auth::user()->posProfile->id,
+            'total_transaction_inSession' => $totalSale,
             'pos_accountancy' => $postAccountancy,
             'pos_order' => $posDetailOrders
         ], 200);
