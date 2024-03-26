@@ -231,7 +231,7 @@ class AccountancyController extends Controller
 
         $posDetailOrders = PosOrder::with('posSale')
             ->where('profile_id', $profileId)
-            ->whereBetween('session_id', $postAccountancy->session_id)
+            ->where('session_id', $postAccountancy->session_id)
             ->get();
 
         return response()->json([
