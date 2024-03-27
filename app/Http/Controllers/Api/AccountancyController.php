@@ -241,8 +241,13 @@ class AccountancyController extends Controller
             ->where('session_id', $postAccountancy->session_id)
             ->sum('total_item_qty');
 
+        $grandTotalSum = PosOrder::with('posSale')
+            ->where('profile_id', $profileId)
+            ->where('session_id', $postAccountancy->session_id)
+            ->sum('grand_total');
         return response()->json([
             // 'profile_id' => Auth::user()->posProfile->id,
+            'grand_total_sum' => $grandTotalSum,
             'total_item_sold_inSession' => $totalItemSold,
             'total_transaction_inSession' => $totalSale,
             'pos_accountancy' => $postAccountancy,
