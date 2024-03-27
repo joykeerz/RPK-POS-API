@@ -244,7 +244,8 @@ class AccountancyController extends Controller
         $grandTotalSum = PosOrder::with('posSale')
             ->where('profile_id', $profileId)
             ->where('session_id', $postAccountancy->session_id)
-            ->sum('grand_total');
+            ->sum('pos_sales.grand_total');
+
         return response()->json([
             // 'profile_id' => Auth::user()->posProfile->id,
             'grand_total_sum' => $grandTotalSum,
