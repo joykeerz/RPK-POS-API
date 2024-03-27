@@ -238,9 +238,11 @@ class AccountancyController extends Controller
                 'posPayment' => function ($query) {
                     $query->select('id', 'payment_method'); // Select only the columns you need from PosPayment
                 },
+            ]);
+            $query->with([
                 'posPromo' => function ($query) {
-                    $query->select('id', 'promo_name'); // Select only the columns you need from PosPayment
-                }
+                    $query->select('id', 'promo_name');
+                },
             ]);
         }])
             ->where('profile_id', $profileId)
