@@ -229,11 +229,14 @@ class AccountancyController extends Controller
             ->where('pos_accountancies.id', $id)
             ->first();
 
-        $posDetailOrders = PosOrder::with('posSale.posPayment')
+        $posDetailOrders = PosOrder::with(['posSale' => function ($query) {
+            $query->with(['posPayment' => function ($query) {
+                $query->select('id', 'payment_method'); // Select only the columns you need from PosPayment
+            }]);
+        }])
             ->where('profile_id', $profileId)
             ->where('session_id', $postAccountancy->session_id)
             ->get();
-
 
         $totalSale = count($posDetailOrders);
 
