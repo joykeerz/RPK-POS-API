@@ -238,16 +238,13 @@ class AccountancyController extends Controller
                 'posPayment' => function ($query) {
                     $query->select('id', 'payment_method'); // Select only the columns you need from PosPayment
                 },
-            ]);
-            $query->with([
-                'posPromo' => function ($query) {
-                    $query->select('id', 'promo_name');
-                },
+                'posPromo' // Lazy load the Promo model
             ]);
         }])
             ->where('profile_id', $profileId)
             ->where('session_id', $postAccountancy->session_id)
             ->get();
+
 
         $totalSale = count($posDetailOrders);
 

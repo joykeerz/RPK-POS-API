@@ -22,6 +22,6 @@ class PosSale extends Model
 
     public function posPromo()
     {
-        return $this->belongsTo(Promo::class);
+        return $this->belongsTo(Promo::class, 'promo_id');
     }
 }
