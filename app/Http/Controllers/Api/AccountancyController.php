@@ -228,6 +228,10 @@ class AccountancyController extends Controller
             ->where('pos_accountancies.profile_id', $profileId)
             ->where('pos_accountancies.id', $id)
             ->first();
+        return $postAccountancy;
+        if (!$postAccountancy) {
+            return response()->json(['error' => 'pembukuan tidak ditemukan'], 404);
+        }
 
         $posDetailOrders = PosOrder::with(['posSale' => function ($query) {
             $query->with(['posPayment' => function ($query) {
@@ -253,9 +257,7 @@ class AccountancyController extends Controller
                 return optional($order->posSale)->grand_total ?? 0;
             });
 
-
         return response()->json([
-            // 'profile_id' => Auth::user()->posProfile->id,
             'grand_total_sum' => $grandTotalSum,
             'total_item_sold_inSession' => $totalItemSold,
             'total_transaction_inSession' => $totalSale,
@@ -310,6 +312,6 @@ class AccountancyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        //code
     }
 }
