@@ -9,4 +9,9 @@ class Promo extends Model
 {
     use HasFactory;
     protected $table = 'pos_promos';
+
+    public function posSale()
+    {
+        return $this->hasMany(PosSale::class, 'promo_id');
+    }
 }

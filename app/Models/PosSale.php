@@ -19,4 +19,9 @@ class PosSale extends Model
     {
         return $this->belongsTo(PosPayment::class, 'payment_method_id');
     }
+
+    public function posPromo()
+    {
+        return $this->belongsTo(Promo::class);
+    }
 }
