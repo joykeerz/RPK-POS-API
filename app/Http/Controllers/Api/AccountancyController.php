@@ -228,7 +228,7 @@ class AccountancyController extends Controller
             ->where('pos_accountancies.profile_id', $profileId)
             ->where('pos_accountancies.id', $id)
             ->first();
-        return $postAccountancy;
+
         if (!$postAccountancy) {
             return response()->json(['error' => 'pembukuan tidak ditemukan'], 404);
         }
