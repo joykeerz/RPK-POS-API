@@ -97,8 +97,7 @@ class AccountancyController extends Controller
             ], 400);
         }
 
-        return Log::info('Data Input: ' . $request->input());
-
+        return $request->input();
 
         foreach ($request->input() as $key => $inputData) {
             $posOrder = new PosOrder();
