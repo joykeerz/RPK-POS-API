@@ -10,6 +10,7 @@ use App\Models\PosSale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AccountancyController extends Controller
@@ -119,6 +120,7 @@ class AccountancyController extends Controller
             $posSale->change_amount = $inputData['change_amount'];
             $posSale->paid_date = $inputData['paid_date'];
             $posSale->save();
+            Log::info('Data transaksi ID: ' . $posSale->id);
 
             foreach ($inputData['detail_order'] as $key => $detailOrder) {
                 $orderDetailData[] = [
@@ -127,6 +129,7 @@ class AccountancyController extends Controller
                     'item_quantity' => $detailOrder['item_quantity'],
                     'item_subtotal' => $detailOrder['item_subtotal']
                 ];
+                Log::info('Data Order Ke: ' . $key);
             }
 
             $posDetailOrder = PosDetailOrder::insert($orderDetailData);
