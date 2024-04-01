@@ -97,7 +97,7 @@ class AccountancyController extends Controller
             ], 400);
         }
 
-        return response()->json($request->input(), 200);
+        // return response()->json($request->input(),200);
 
         foreach ($request->input() as $key => $inputData) {
             $posOrder = new PosOrder();
