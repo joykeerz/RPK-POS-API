@@ -100,6 +100,7 @@ class AccountancyController extends Controller
         // return response()->json($request->input(),200);
 
         foreach ($request->input() as $key => $inputData) {
+            $orderDetailData = [];
             $posOrder = new PosOrder();
             $posOrder->profile_id = $profileId;
             $posOrder->session_id = $inputData['session_id'];
