@@ -96,7 +96,7 @@ class AccountancyController extends Controller
                 'error' => "please fill data"
             ], 400);
         }
-
+        return $request->input();
         foreach ($request->input() as $key => $inputData) {
             $posOrder = new PosOrder();
             $posOrder->profile_id = $profileId;
@@ -120,6 +120,7 @@ class AccountancyController extends Controller
             $posSale->change_amount = $inputData['change_amount'];
             $posSale->paid_date = $inputData['paid_date'];
             $posSale->save();
+
             Log::info('Data transaksi ID: ' . $posSale->id);
 
             foreach ($inputData['detail_order'] as $key => $detailOrder) {
