@@ -96,7 +96,10 @@ class AccountancyController extends Controller
                 'error' => "please fill data"
             ], 400);
         }
-        return $request->input();
+
+        return Log::info('Data Input: ' . $request->input());
+
+
         foreach ($request->input() as $key => $inputData) {
             $posOrder = new PosOrder();
             $posOrder->profile_id = $profileId;
