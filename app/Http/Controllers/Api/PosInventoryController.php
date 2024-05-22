@@ -17,16 +17,18 @@ class PosInventoryController extends Controller
         $profileId = Auth::user()->posProfile->id;
         $inventory = PosProduct::with(['posInventory', 'posCategory'])
             ->where('profile_id', $profileId)
+            ->whereHas('posInventory')
             ->get();
 
-        if (empty($inventory)) {
+        if ($inventory->isEmpty()) {
             return response()->json([
-                'error' => "there's no data yet"
+                'error' => "There's no data yet"
             ], 404);
-        };
+        }
 
         return response()->json($inventory, 200);
     }
+
 
     public function getSingleInventory($id)
     {
