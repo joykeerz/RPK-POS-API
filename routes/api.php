@@ -55,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update/{id}', [PosInventoryController::class, 'updateInventory']);
         Route::delete('/delete/{id}', [PosInventoryController::class, 'deleteInventory']);
         Route::put('/update/quantity/{id}', [PosInventoryController::class, 'updateInventoryQuantity']);
+        Route::put('/update/published/{id}', [PosInventoryController::class, 'updateInventoryIsPublished']);
     });
 
     Route::prefix('product')->group(function () {

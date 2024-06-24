@@ -22,6 +22,7 @@ class AccountancyController extends Controller
     {
         $posAccountancy = PosAccountancy::with(['posSession'])
             ->where('profile_id', Auth::user()->posProfile->id)
+            ->orderby('created_at')
             ->get();
 
         return response()->json($posAccountancy, 200);
@@ -32,6 +33,7 @@ class AccountancyController extends Controller
         $posAccountancy = PosAccountancy::with(['posSession'])
             ->where('profile_id', Auth::user()->posProfile->id)
             ->whereDate('created_at', now())
+            ->orderby('created_at')
             ->get();
 
         return response()->json($posAccountancy, 200);
@@ -42,6 +44,7 @@ class AccountancyController extends Controller
         $posAccountancy = PosAccountancy::with(['posSession'])
             ->where('profile_id', Auth::user()->posProfile->id)
             ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->orderby('created_at')
             ->get();
 
         return response()->json($posAccountancy, 200);
@@ -69,6 +72,7 @@ class AccountancyController extends Controller
             $posAccountancy = PosAccountancy::with(['posSession'])
                 ->where('profile_id', Auth::user()->posProfile->id)
                 ->whereDate('created_at', $request->start)
+                ->orderby('created_at')
                 ->get();
             return response()->json($posAccountancy, 200);
         }
@@ -76,6 +80,7 @@ class AccountancyController extends Controller
         $posAccountancy = PosAccountancy::with(['posSession'])
             ->where('profile_id', Auth::user()->posProfile->id)
             ->whereBetween('created_at', [$request->start, $request->end])
+            ->orderby('created_at')
             ->get();
 
         return response()->json($posAccountancy, 200);

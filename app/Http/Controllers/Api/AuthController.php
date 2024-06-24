@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPUnit\Framework\isEmpty;
+
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -54,7 +56,7 @@ class AuthController extends Controller
 
         $checkProfile = PosProfile::where('user_id', $user->id)->first();
         $isFirstTime = false;
-        if ($checkProfile == null || !$checkProfile) {
+        if ($checkProfile->pin == null || $checkProfile->pin == '') {
             $isFirstTime = true;
         }
 
@@ -129,7 +131,7 @@ class AuthController extends Controller
                 ], 401);
             }
             $profile = PosProfile::where('user_id', Auth::user()->id)->first();
-            if ($profile == null || !$profile) {
+            if ($profile->pin == null || $profile->pin == '') {
                 return response()->json([
                     'isFirstTime' => true
                 ], 200);
@@ -198,64 +200,64 @@ class AuthController extends Controller
         }
 
         $profile = PosProfile::where('user_id', Auth::user()->id)->first();
-        $user = User::where('id', Auth::user()->id)->first();
-        if ($profile == null || !$profile) {
-            $profile = new PosProfile();
-            $profile->pos_name = $user->name;
-            $profile->user_id = $user->id;
-            $profile->save();
+        // $user = User::where('id', Auth::user()->id)->first();
+        // if ($profile == null || !$profile) {
+        //     $profile = new PosProfile();
+        //     $profile->pos_name = $user->name;
+        //     $profile->user_id = $user->id;
+        //     $profile->save();
 
 
-            $category = new PosCategory();
-            $category->profile_id = $profile->id;
-            $category->category_name = "Lainnya";
-            $category->category_desc = "Produk milik toko";
-            $category->is_from_bulog = false;
-            $category->save();
+        //     $category = new PosCategory();
+        //     $category->profile_id = $profile->id;
+        //     $category->category_name = "Lainnya";
+        //     $category->category_desc = "Produk milik toko";
+        //     $category->is_from_bulog = false;
+        //     $category->save();
 
-            $promo = new Promo();
-            $promo->profile_id = $profile->id;
-            $promo->promo_name = "Tidak Promo";
-            $promo->promo_type = "Percent Off";
-            $promo->promo_category = "Bulog Discount";
-            $promo->promo_value = 0;
-            $promo->is_active = true;
-            $promo->is_from_bulog = true;
-            $promo->promo_start = now();
-            $promo->promo_end = now();
-            $promo->save();
+        //     $promo = new Promo();
+        //     $promo->profile_id = $profile->id;
+        //     $promo->promo_name = "Tidak Promo";
+        //     $promo->promo_type = "Percent Off";
+        //     $promo->promo_category = "Bulog Discount";
+        //     $promo->promo_value = 0;
+        //     $promo->is_active = true;
+        //     $promo->is_from_bulog = true;
+        //     $promo->promo_start = now();
+        //     $promo->promo_end = now();
+        //     $promo->save();
 
-            $discount = new Discount();
-            $discount->profile_id = $profile->id;
-            $discount->discount_name = "Tidak Diskon";
-            $discount->discount_type = "Percent Off";
-            $discount->discount_value = 0;
-            $discount->is_active = true;
-            $discount->is_from_bulog = true;
-            $discount->save();
+        //     $discount = new Discount();
+        //     $discount->profile_id = $profile->id;
+        //     $discount->discount_name = "Tidak Diskon";
+        //     $discount->discount_type = "Percent Off";
+        //     $discount->discount_value = 0;
+        //     $discount->is_active = true;
+        //     $discount->is_from_bulog = true;
+        //     $discount->save();
 
-            $paymentMethod = new PosPayment();
-            $paymentMethod->profile_id = $profile->id;
-            $paymentMethod->payment_method = "Tunai";
-            $paymentMethod->payment_info = "Pembayaran tunai";
-            $paymentMethod->save();
+        //     $paymentMethod = new PosPayment();
+        //     $paymentMethod->profile_id = $profile->id;
+        //     $paymentMethod->payment_method = "Tunai";
+        //     $paymentMethod->payment_info = "Pembayaran tunai";
+        //     $paymentMethod->save();
 
-            // $employee = new PosEmployee();
-            // $employee->profile_id = $profile->id;
-            // $employee->pin = bcrypt('123456');
-            // $employee->employee_name = Auth::user()->name;
-            // $employee->employee_email = Auth::user()->email;
-            // $employee->employee_phone = Auth::user()->no_hp;
-            // $employee->save();
+        //     // $employee = new PosEmployee();
+        //     // $employee->profile_id = $profile->id;
+        //     // $employee->pin = bcrypt('123456');
+        //     // $employee->employee_name = Auth::user()->name;
+        //     // $employee->employee_email = Auth::user()->email;
+        //     // $employee->employee_phone = Auth::user()->no_hp;
+        //     // $employee->save();
 
-            DB::table('pos_employees')->insert([
-                'profile_id' => $profile->id,
-                'pin' => bcrypt('123456'),
-                'employee_name' => Auth::user()->name,
-                'employee_phone' => Auth::user()->no_hp,
-                'is_owner' => true,
-            ]);
-        }
+        //     DB::table('pos_employees')->insert([
+        //         'profile_id' => $profile->id,
+        //         'pin' => bcrypt('123456'),
+        //         'employee_name' => Auth::user()->name,
+        //         'employee_phone' => Auth::user()->no_hp,
+        //         'is_owner' => true,
+        //     ]);
+        // }
 
         $profile->pin = Hash::make($request->pin);
         $profile->save();

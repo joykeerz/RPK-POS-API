@@ -173,10 +173,8 @@ class PosInventoryController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            // 'type' => 'required',
             'quantity' => 'required',
         ], [
-            // 'type.required' => 'type harus di isi',
             'quantity.required' => 'quantity harus di isi',
         ]);
 
@@ -186,7 +184,11 @@ class PosInventoryController extends Controller
             ], 400);
         }
 
-        $inventory = PosInventory::findOrFail($id);
+        $inventory = PosInventory::find($id);
+
+        if (empty($inventory)) {
+            return response()->json('id inventory not found');
+        }
 
         if ($request->type == 'add' || $request->quantity > 0) {
             $inventory->increment('quantity', $request->quantity);
@@ -199,5 +201,23 @@ class PosInventoryController extends Controller
         }
 
         return response()->json($inventory, 200);
+    }
+
+    public function updateInventoryIsPublished($id)
+    {
+        $inventory = PosInventory::find($id);
+        if (!$inventory) {
+            return response()->json([
+                'error' => 'Inventory item not found'
+            ], 404);
+        }
+        $inventory->is_published = !$inventory->is_published;
+        if ($inventory->save()) {
+            return response()->json($inventory, 200);
+        } else {
+            return response()->json([
+                'error' => 'Failed to update inventory publication status'
+            ], 500);
+        }
     }
 }
